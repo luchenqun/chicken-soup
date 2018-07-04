@@ -1,0 +1,15 @@
+{
+  "name": "chicken-soup-server",
+  "version": "1.0.0",
+  "description": "chicken soup server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "luchenqun",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.5.1"
+  },
+  "devDependencies": {}
+}
