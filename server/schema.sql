@@ -8,6 +8,7 @@ CREATE TABLE `users` (
   `email` varchar(255) DEFAULT NULL,        -- 邮箱
   `avatar` varchar(255) DEFAULT NULL,       -- 上传头像
   `registered` datetime DEFAULT now(),      -- 创建时间
+  `role` tinyint(4) DEFAULT '1',            -- 状态 0 管理员 1 普通
   `last_login` datetime DEFAULT now(),      -- 最后一次登录时间
   PRIMARY KEY (`id`),
   UNIQUE KEY `account` (`account`),
