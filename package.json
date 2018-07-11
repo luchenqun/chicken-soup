@@ -6,9 +6,11 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "server": "./node_modules/.bin/nodemon ./server/app.js",
     "dev": "./node_modules/.bin/nodemon ./server/app.js | npm run serve"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
     "vuetify": "^1.1.1"
@@ -19,6 +21,19 @@
     "@vue/cli-service": "^3.0.0-beta.15",
     "nodemon": "^1.17.5",
     "vue-template-compiler": "^2.5.16"
+  },
+  "vue": {
+    "devServer": {
+      "proxy": {
+        "/api": {
+          "target": "http://10.10.8.13:8000",
+          "changeOrigin": true,
+          "pathRewrite": {
+            "^/api": "/api"
+          }
+        }
+      }
+    }
   },
   "eslintConfig": {
     "root": true,

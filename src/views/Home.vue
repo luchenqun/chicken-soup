@@ -26,7 +26,7 @@
         </v-content>
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;;">
-        <span class="subheading">Lorem Lorem Lorem Lorem Lorem ipsum dolor sit amet, pri veniam forensibus id. Vis maluisset molestiae id, ad semper lobortis cum. At impetus detraxit incorrupte usu, repudiare assueverit ex eum, ne nam essent vocent admodum.</span>
+        <span class="subheading">{{ content }}</span>
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="true">
         <img src="../assets/t.jpg" style="max-width: 100%;height: auto;" />
@@ -101,12 +101,19 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data: () => ({
+    content: "",
     icons: ["fab fa-facebook", "fab fa-twitter", "fab fa-google-plus", "fab fa-linkedin", "fab fa-instagram"],
     favorites: ["一米阳光", "别说你怎么样。", "荒梦", "大梦平生", "浥轻尘", "砥砺前行", "　int♝＝0；", "*^O^*天然呆", "云晴岚雷雾雨", "Th.D", "宿州网站建设", "开心就好", "欲。", "不想翻身的咸鱼", "简森", "☞逸光惜晨☜"],
     praises: ["阿毛", "會飛啲魚♂", "-仅此而已", "人走茶易凉°C", "青木", "园来有你", "一叶知秋", "我不是漫游", "钟钟", "百事逍遥子", "砥砺前行", "好名字能让人印象深刻", "池毓兴", "*^O^*天然呆", "云晴岚雷雾雨", "茴香味老中医", "光属性宅男", "只有神知道的世界", "来年秋风起"],
     bottomNav: 2
-  })
+  }),
+  created: async function() {
+    let resp = await axios.get("/api/chicken/", { id: parseInt(Math.random() * 500 + 1) });
+    this.content = resp.data[0].content;
+    console.log(resp);
+  }
 };
 </script>
