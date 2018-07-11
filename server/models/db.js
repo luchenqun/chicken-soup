@@ -13,7 +13,8 @@ var pool = mysql.createPool({
 var db = {};
 
 db.post = async function(id) {
-  let post = await pool.query("SELECT * FROM `posts` WHERE `id` = '" + id + "'");
+
+  let post = await pool.query("SELECT p.*, u.nickname, u.id as uid, u.avatar FROM `posts` as p LEFT OUTER JOIN users as u ON p.id = u.id WHERE p.id = '"+ id +"'");
   return post;
 };
 
