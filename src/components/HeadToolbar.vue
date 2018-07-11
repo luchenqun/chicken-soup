@@ -1,6 +1,6 @@
 <template>
   <v-toolbar dark color="primary" id="js-toolbar" height="56">
-    <v-toolbar-side-icon></v-toolbar-side-icon>
+    <v-toolbar-side-icon @click="updateLeftNav()"></v-toolbar-side-icon>
     <v-toolbar-title class="white--text">Title</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-btn icon>
@@ -17,9 +17,20 @@
     </v-btn>
   </v-toolbar>
 </template>
+
+
 <script>
+import bus from "../eventBus.js";
 export default {
-  data: () => ({}),
+  data: () => ({
+    leftNav: false
+  }),
+  methods: {
+    updateLeftNav: function() {
+      this.leftNav = !this.leftNav;
+      bus.$emit("updateLeftNav", this.leftNav);
+    }
+  },
   computed: {}
 };
 </script>

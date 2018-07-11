@@ -5,10 +5,6 @@ var api = function() {
 
   router.prefix("/api");
 
-  router.get("/hello", async ctx => {
-    ctx.body = "Hello Vue";
-  });
-
   router.get("/chicken", async ctx => {
     // console.log(ctx.req);
     let data = await db.post(parseInt(Math.random() * 500) + 1);

@@ -1,6 +1,6 @@
 <template>
   <v-content style="background-color:#fff;margin: auto;">
-    <v-content style="max-width:600px;margin:60px 0px;">
+    <v-content style="max-width:600px;margin:60px 0px 0px 0px;">
       <v-container fluid style="padding:8px 8px 0px 8px;">
         <v-content page style="height:80px;margin: auto;">
           <div style="width:80px;height:80px;float:left">
@@ -96,12 +96,29 @@
           </v-layout>
         </v-container>
       </v-container>
+      <v-btn-toggle style="width:100%">
+        <v-btn block x-large>
+          <v-icon>arrow_back</v-icon>
+        </v-btn>
+        <v-btn block x-large @click="getContent">
+          <v-icon>sync</v-icon>
+        </v-btn>
+        <v-btn block x-large>
+          <v-icon>arrow_forward</v-icon>
+        </v-btn>
+      </v-btn-toggle>
+
+      <!-- <div row wrap class="text-xs-center" color="primary">
+
+      </div> -->
     </v-content>
   </v-content>
 </template>
 
 <script>
 import axios from "axios";
+import bus from "../eventBus.js";
+
 export default {
   data: () => ({
     content: "",
@@ -110,10 +127,24 @@ export default {
     praises: ["阿毛", "會飛啲魚♂", "-仅此而已", "人走茶易凉°C", "青木", "园来有你", "一叶知秋", "我不是漫游", "钟钟", "百事逍遥子", "砥砺前行", "好名字能让人印象深刻", "池毓兴", "*^O^*天然呆", "云晴岚雷雾雨", "茴香味老中医", "光属性宅男", "只有神知道的世界", "来年秋风起"],
     bottomNav: 2
   }),
+  methods: {
+    async getContent() {
+      let resp = await axios.get("/api/chicken/", { id: parseInt(Math.random() * 500 + 1) });
+      this.content = resp.data[0].content;
+    }
+  },
   created: async function() {
     let resp = await axios.get("/api/chicken/", { id: parseInt(Math.random() * 500 + 1) });
     this.content = resp.data[0].content;
-    console.log(resp);
   }
 };
 </script>
+
+<style>
+#js-menu {
+  z-index: 200;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+</style>
