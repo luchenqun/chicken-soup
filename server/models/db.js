@@ -13,7 +13,8 @@ var pool = mysql.createPool({
 var db = {};
 
 db.post = async function(id) {
-  return pool.query("SELECT * FROM `posts` WHERE `id` = '" + id + "'");
+  let post = await pool.query("SELECT * FROM `posts` WHERE `id` = '" + id + "'");
+  return post;
 };
 
 module.exports = db;

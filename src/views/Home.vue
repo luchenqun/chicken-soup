@@ -1,5 +1,5 @@
 <template>
-  <v-content style="background-color:#fff;margin: auto;">
+  <v-content style="background-color:#fff;margin: auto;" v-touch="{left: () => getContent()}">
     <v-content style="max-width:600px;margin:60px 0px 0px 0px;">
       <v-container fluid style="padding:8px 8px 0px 8px;">
         <v-content page style="height:80px;margin: auto;">
@@ -136,6 +136,11 @@ export default {
   created: async function() {
     let resp = await axios.get("/api/chicken/", { id: parseInt(Math.random() * 500 + 1) });
     this.content = resp.data[0].content;
+  },
+  beforeMount() {
+    bus.$on("updateContent", async () => {
+      await this.getContent();
+    });
   }
 };
 </script>
