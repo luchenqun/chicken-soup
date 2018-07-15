@@ -1,7 +1,7 @@
 <template>
   <v-toolbar dark color="primary" id="js-toolbar" height="56">
     <v-toolbar-side-icon @click="updateLeftNav()"></v-toolbar-side-icon>
-    <v-toolbar-title class="white--text">Title</v-toolbar-title>
+    <v-toolbar-title class="white--text">鸡汤毒汤段子网</v-toolbar-title>
     <v-spacer></v-spacer>
     <v-btn icon>
       <v-icon>search</v-icon>

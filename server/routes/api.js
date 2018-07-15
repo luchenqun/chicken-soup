@@ -6,8 +6,9 @@ var api = function() {
   router.prefix("/api");
 
   router.get("/chicken", async ctx => {
-    // console.log(ctx.req);
-    let data = await db.post(parseInt(Math.random() * 500) + 1);
+    console.log(ctx.query);
+    let id = ctx.query.id;
+    let data = await db.post(id);
     ctx.body = data;
   });
 

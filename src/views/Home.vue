@@ -1,102 +1,95 @@
 <template>
-  <v-content style="background-color:#fff;margin: auto;" v-touch="{left: () => getContent()}">
-    <v-content style="max-width:600px;margin:60px 0px 0px 0px;">
+  <v-content style="background-color:#fff;margin: auto;height:100%" id="js-home" v-touch="{left: () => getContent()}">
+    <v-content style="width:600px;margin:60px 0px 0px 0px;">
       <v-container fluid style="padding:8px 8px 0px 8px;">
         <v-content page style="height:80px;margin: auto;">
           <div style="width:80px;height:80px;float:left">
             <v-avatar size="80" color="grey lighten-4">
-              <img src="../assets/avatar.jpg" alt="avatar">
+              <img :src="user.avatar" alt="avatar">
             </v-avatar>
           </div>
           <div style="margin-left:90px;height:80px;">
             <v-content fluid>
               <v-layout row wrap>
                 <v-flex xs12 style="height:30px;">
-                  <p class="text-sm-left" style="font-size:20px;">匿名</p>
+                  <p class="text-sm-left" style="font-size:20px;">{{user.nickname}}</p>
                 </v-flex>
                 <v-flex xs12 style="height:25px;">
-                  <p class="text-sm-left" style="font-size:15px;">第 70234 号会员，加入于3月前</p>
+                  <p class="text-sm-left" style="font-size:15px;">第 {{user.uid}} 号会员，加入于
+                    <timeago :since="user.registered" :includeSeconds="true" :autoUpdate=1></timeago>
+                  </p>
                 </v-flex>
                 <v-flex xs12 style="height:25px;">
-                  <p class="text-sm-left" style="font-size:15px;">发表10条，被收藏100次</p>
+                  <p class="text-sm-left" style="font-size:15px;">共发表 {{user.postNum}} 条，被收藏 {{user.favoriteNum}} 次</p>
                 </v-flex>
               </v-layout>
             </v-content>
           </div>
         </v-content>
       </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;;">
-        <span class="subheading">{{ content }}</span>
+      <v-container fluid style="padding:8px 8px 0px 8px;">
+        <span style="font-size:20px;">{{ post.content }}</span>
       </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="true">
-        <img src="../assets/t.jpg" style="max-width: 100%;height: auto;" />
+      <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="post.imgs">
+        <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in post.imgs" :key="index" />
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;height:25px">
         <v-layout row wrap>
           <v-flex xs3>
-            <p class="text-sm-left">浏览 100 次</p>
+            <p class="text-sm-left">浏览 {{post.see}} 次</p>
           </v-flex>
-          <v-flex xs3>
+          <v-flex xs4>
           </v-flex>
-          <v-flex xs6>
+          <v-flex xs5>
             <v-layout align-center justify-space-around>
-              <v-icon small>fas fa-lock</v-icon>
-              <v-icon small>fas fa-search</v-icon>
-              <v-icon small>fas fa-list</v-icon>
-              <v-icon small>fas fa-edit</v-icon>
+              <v-icon size="25">favorite_border</v-icon>
+              <v-icon size="25">chat</v-icon>
+              <v-icon size="25">fas fa-share</v-icon>
             </v-layout>
           </v-flex>
         </v-layout>
       </v-container>
-      <v-container fluid style="padding:3px 8px 0px 8px;">
+      <v-container fluid style="padding:3px 8px 0px 8px;" v-if="favorite.length > 0">
         <p class="text-sm-left" style="margin:0px">
-          <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>會飛啲魚♂、绿血贵族@安浪科技、-仅此而已、老男人-80后的大叔、一叶知秋、pangwen、战胜自我、百事逍遥子、池毓兴、*^O^*天然呆、云晴岚雷雾雨、贝铃·Turing、ZEROD、東升、Bell、Setsuna(:;(∩´﹏`∩);:)、老实的胖子、只有神知道的世界、猫的树、雨淅沥沥的下等27人收藏</p>
+          <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>{{ favorite.map(item => item.nickname ).join("，")}} {{favorite.length}} 人收藏</p>
       </v-container>
       <v-container fluid style="padding:0px 8px 0px 0px;">
-        <v-container fluid style="padding:8px 8px 0px 8px;">
-          <v-content page style="margin: 0px;">
+        <v-container fluid style="padding:8px 8px 0px 8px;" v-if="comment.length > 0">
+          <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comment" :key="c.lid">
             <div style="width:40px;height:40px;float:left">
               <v-avatar size="40" color="grey lighten-4">
-                <img src="../assets/avatar.jpg" alt="avatar">
+                <img :src="c.avatar" alt="avatar">
               </v-avatar>
             </div>
             <div style="margin-left:50px;">
-              <p class="text-sm-left" style="margin:0px">泥巴 : “老板，我在公司干了5年了，对公司没有功劳也有苦劳，为什么大家都加工资了，我的工资还是2500？是不是应该给我加点工资呢？” “小王啊，你对公司的付出我是看在眼里的，我也觉得挺对不住你的，这样吧，从这个月工资给你涨到8000，你觉得怎么样？” 老板话说完笑呵呵的看着我，然后我也笑了，顺便放下了手里的大砍刀。</p>
-              <p style="margin-bottom:5px">前天 19点39分</p>
-            </div>
-          </v-content>
-          <v-content page style="margin: 0px;">
-            <div style="width:40px;height:40px;float:left">
-              <v-avatar size="40" color="grey lighten-4">
-                <img src="../assets/t.jpg" alt="avatar">
-              </v-avatar>
-            </div>
-            <div style="margin-left:50px;">
-              <p class="text-sm-left" style="margin:0px">會飛啲魚♂ : 天天的不好好上班，净看这些洗脑的段子，告诉我哪里看的，我也要看</p>
-              <p style="margin-bottom:5px">今天 12点30分</p>
+              <p class="text-sm-left" style="margin:0px">
+                <span style="color:RGB(41,92,157);">{{c.nickname}}</span> : {{c.comment}}</p>
+              <p style="margin-bottom:5px" class="grey--text">
+                <timeago :since="c.date" :includeSeconds="true" :autoUpdate=1></timeago>
+              </p>
             </div>
           </v-content>
         </v-container>
         <v-container fluid>
-          <v-divider></v-divider>
+          <v-divider style="background-color:#949494"></v-divider>
           <v-textarea color="teal" clearable hide-details maxlength="120">
             <div slot="label">评论</div>
           </v-textarea>
           <v-layout row wrap style="margin-top:6px;">
             <v-flex xs6>
-              <v-btn flat icon color="primary" style="margin-top:0px;margin-left:0px;">
+              <v-btn flat icon color="primary" style="margin-top:1px;margin-left:0px;">
                 <v-icon>sentiment_satisfied_alt</v-icon>
               </v-btn>
             </v-flex>
             <v-flex xs6>
               <v-btn small color="primary" style="margin:5px 0px 0px 0px;float:right">
-                发送
+                发送评论
               </v-btn>
             </v-flex>
           </v-layout>
         </v-container>
       </v-container>
-      <v-btn-toggle style="width:100%">
+      <!-- <v-btn-toggle style="width:100%">
         <v-btn block x-large>
           <v-icon>arrow_back</v-icon>
         </v-btn>
@@ -106,36 +99,52 @@
         <v-btn block x-large>
           <v-icon>arrow_forward</v-icon>
         </v-btn>
-      </v-btn-toggle>
-
-      <!-- <div row wrap class="text-xs-center" color="primary">
-
-      </div> -->
+      </v-btn-toggle> -->
     </v-content>
   </v-content>
 </template>
 
 <script>
 import axios from "axios";
+import Identicon from "identicon.js";
+import md5 from "md5";
 import bus from "../eventBus.js";
 
 export default {
   data: () => ({
+    post: {},
+    user: {},
     content: "",
-    icons: ["fab fa-facebook", "fab fa-twitter", "fab fa-google-plus", "fab fa-linkedin", "fab fa-instagram"],
-    favorites: ["一米阳光", "别说你怎么样。", "荒梦", "大梦平生", "浥轻尘", "砥砺前行", "　int♝＝0；", "*^O^*天然呆", "云晴岚雷雾雨", "Th.D", "宿州网站建设", "开心就好", "欲。", "不想翻身的咸鱼", "简森", "☞逸光惜晨☜"],
-    praises: ["阿毛", "會飛啲魚♂", "-仅此而已", "人走茶易凉°C", "青木", "园来有你", "一叶知秋", "我不是漫游", "钟钟", "百事逍遥子", "砥砺前行", "好名字能让人印象深刻", "池毓兴", "*^O^*天然呆", "云晴岚雷雾雨", "茴香味老中医", "光属性宅男", "只有神知道的世界", "来年秋风起"],
-    bottomNav: 2
+    favorite: [],
+    comment: []
   }),
   methods: {
     async getContent() {
-      let resp = await axios.get("/api/chicken/", { id: parseInt(Math.random() * 500 + 1) });
-      this.content = resp.data[0].content;
+      let params = {
+        id: parseInt(Math.random() * 500 + 1)
+      };
+      let resp = await axios.get("/api/chicken/", { params });
+      this.post = resp.data.post;
+      this.user = resp.data.user;
+      if (!this.user.avatar) {
+        this.$set(this.user, "avatar", "data:image/png;base64," + new Identicon(md5(this.user.account)).toString());
+      }
+      for (let c of resp.data.comment) {
+        if (!c.avatar) {
+          this.$set(c, "avatar", "data:image/png;base64," + new Identicon(md5(c.account)).toString());
+        }
+      }
+
+      this.favorite = resp.data.favorite;
+      this.comment = resp.data.comment;
+      console.log(resp.data);
+      this.$nextTick().then(() => {
+        this.$scrollTo("#js-home");
+      });
     }
   },
   created: async function() {
-    let resp = await axios.get("/api/chicken/", { id: parseInt(Math.random() * 500 + 1) });
-    this.content = resp.data[0].content;
+    await this.getContent();
   },
   beforeMount() {
     bus.$on("updateContent", async () => {

@@ -4,10 +4,10 @@
       <v-list class="pa-1">
         <v-list-tile avatar>
           <v-list-tile-avatar>
-            <img src="https://randomuser.me/api/portraits/men/85.jpg">
+            <img src="../assets/avatar.jpg">
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>John Leider</v-list-tile-title>
+            <v-list-tile-title>LuChenQun</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       drawer: false,
-      items: [{ title: "Home", icon: "dashboard" }, { title: "About", icon: "question_answer" }]
+      items: [{ title: "我发表的", icon: "dashboard" }, { title: "关于", icon: "question_answer" }]
     };
   },
   beforeMount() {

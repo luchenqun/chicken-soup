@@ -12,10 +12,45 @@ var pool = mysql.createPool({
 
 var db = {};
 
-db.post = async function(id) {
+db.user = async function (id) {
+  let sql1 = "SELECT * FROM `users` WHERE `uid` = '" + id + "'";
+  let sql2 = "select count(user_id) as postNum FROM `posts` WHERE `user_id` = '" + id + "'";
+  let sql3 = "select count(user_id) as favoriteNum  FROM `links` WHERE `user_id` = '" + id + "' AND `type` = '0'";
+  let user = await pool.query(sql1);
+  let postNum = await pool.query(sql2);
+  let favoriteNum = await pool.query(sql3);
 
-  let post = await pool.query("SELECT p.*, u.nickname, u.id as uid, u.avatar FROM `posts` as p LEFT OUTER JOIN users as u ON p.id = u.id WHERE p.id = '"+ id +"'");
-  return post;
+  let data = Object.assign(user[0], postNum[0], favoriteNum[0]);
+
+  return data;
+}
+
+db.post = async function (id) {
+  let sql1 = "SELECT * FROM `posts` WHERE `pid` = '" + id + "'";
+  let sql2 = "SELECT favorite.*, u.uid, u.nickname FROM `links` as favorite LEFT OUTER JOIN users as u ON favorite.link_id = u.uid  WHERE `post_id` = '" + id + "' AND `type` = '0'";
+  let sql3 = "SELECT comment.*, u.uid, u.nickname, u.avatar, u.account FROM `links` as comment LEFT OUTER JOIN users as u ON comment.link_id = u.uid  WHERE `post_id` = '" + id + "' AND `type` = '1'";
+
+  console.log(sql1);
+  console.log(sql2);
+  console.log(sql3);
+
+  let posts = await pool.query(sql1);
+  let user = null;
+  let post = posts[0];
+  if (post) {
+    (post.imgs) && (post.imgs = JSON.parse(post.imgs));
+    user = await db.user(post.user_id);
+  }
+
+  let favorite = await pool.query(sql2);
+  let comment = await pool.query(sql3);
+  let data = {
+    post,
+    user,
+    favorite,
+    comment
+  }
+  return data;
 };
 
 module.exports = db;
