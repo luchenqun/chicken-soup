@@ -18,6 +18,10 @@ app.use(api());
 
 app.listen(8000);
 
+setTimeout(async () => {
+
+}, 100)
+
 setInterval(async () => {
   let body = await rp("https://www.nihaowua.com/home.html");
   let bIndex = body.search(/<div id=\"post*/i);

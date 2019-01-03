@@ -71,4 +71,15 @@ db.insertBySpider = async function (content) {
   return 0;
 };
 
+db.postMaxPid = async function () {
+  let sql1 = "select max(pid) as maxPid from posts";
+
+  console.log(sql1);
+
+  let results = await pool.query(sql1);
+  let ret = results[0];
+  return ret ? ret.maxPid : 0;
+
+};
+
 module.exports = db;

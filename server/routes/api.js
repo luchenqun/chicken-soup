@@ -12,6 +12,10 @@ var api = function() {
     ctx.body = data;
   });
 
+  router.get("/max-pid", async ctx => {
+    ctx.body = await db.postMaxPid();
+  });
+
   return router.routes();
 };
 

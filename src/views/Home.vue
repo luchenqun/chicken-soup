@@ -15,8 +15,9 @@
                   <p class="text-sm-left" style="font-size:20px;">{{user.nickname}}</p>
                 </v-flex>
                 <v-flex xs12 style="height:25px;">
-                  <p class="text-sm-left" style="font-size:15px;">第 {{user.uid}} 号会员，加入于
-                    <timeago :since="user.registered" :includeSeconds="true" :autoUpdate=1></timeago>
+                  <p class="text-sm-left" style="font-size:15px;">
+                    第 {{user.uid}} 号会员，加入于
+                    <timeago :since="user.registered" :includeSeconds="true" :autoUpdate="1"></timeago>
                   </p>
                 </v-flex>
                 <v-flex xs12 style="height:25px;">
@@ -28,18 +29,20 @@
         </v-content>
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;">
-        <span style="font-size:20px;">{{ post.content }}</span>
+        <div class="text-xs-center" v-if="loading">
+          <v-progress-circular :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+        </div>
+        <span style="font-size:20px;" v-else>{{ post.content }}</span>
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="post.imgs">
-        <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in post.imgs" :key="index" />
+        <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in post.imgs" :key="index">
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;height:25px">
         <v-layout row wrap>
           <v-flex xs3>
             <p class="text-sm-left">浏览 {{post.see}} 次</p>
           </v-flex>
-          <v-flex xs4>
-          </v-flex>
+          <v-flex xs4></v-flex>
           <v-flex xs5>
             <v-layout align-center justify-space-around>
               <v-icon size="25">favorite_border</v-icon>
@@ -51,7 +54,9 @@
       </v-container>
       <v-container fluid style="padding:3px 8px 0px 8px;" v-if="favorite.length > 0">
         <p class="text-sm-left" style="margin:0px">
-          <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>{{ favorite.map(item => item.nickname ).join("，")}} {{favorite.length}} 人收藏</p>
+          <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>
+          {{ favorite.map(item => item.nickname ).join("，")}} {{favorite.length}} 人收藏
+        </p>
       </v-container>
       <v-container fluid style="padding:0px 8px 0px 0px;">
         <v-container fluid style="padding:8px 8px 0px 8px;" v-if="comment.length > 0">
@@ -63,9 +68,11 @@
             </div>
             <div style="margin-left:50px;">
               <p class="text-sm-left" style="margin:0px">
-                <span style="color:RGB(41,92,157);">{{c.nickname}}</span> : {{c.comment}}</p>
+                <span style="color:RGB(41,92,157);">{{c.nickname}}</span>
+                : {{c.comment}}
+              </p>
               <p style="margin-bottom:5px" class="grey--text">
-                <timeago :since="c.date" :includeSeconds="true" :autoUpdate=1></timeago>
+                <timeago :since="c.date" :includeSeconds="true" :autoUpdate="1"></timeago>
               </p>
             </div>
           </v-content>
@@ -82,24 +89,16 @@
               </v-btn>
             </v-flex>
             <v-flex xs6>
-              <v-btn small color="primary" style="margin:5px 0px 0px 0px;float:right">
-                发送评论
-              </v-btn>
+              <v-btn small color="primary" style="margin:5px 0px 0px 0px;float:right">发送评论</v-btn>
             </v-flex>
           </v-layout>
         </v-container>
       </v-container>
-      <!-- <v-btn-toggle style="width:100%">
-        <v-btn block x-large>
-          <v-icon>arrow_back</v-icon>
+      <div class="text-xs-center">
+        <v-btn fab dark large color="green darken-2" @click="getContent">
+          <v-icon x-large dark>autorenew</v-icon>
         </v-btn>
-        <v-btn block x-large @click="getContent">
-          <v-icon>sync</v-icon>
-        </v-btn>
-        <v-btn block x-large>
-          <v-icon>arrow_forward</v-icon>
-        </v-btn>
-      </v-btn-toggle> -->
+      </div>
     </v-content>
   </v-content>
 </template>
@@ -115,13 +114,18 @@ export default {
     post: {},
     user: {},
     content: "",
+    maxPid: 500,
     favorite: [],
+    loading: false,
     comment: []
   }),
   methods: {
     async getContent() {
+      this.content = "";
+      this.loading = true;
+      await this.$sleep(Math.random() * 1000)
       let params = {
-        id: parseInt(Math.random() * 500 + 1)
+        id: parseInt(Math.random() * this.maxPid + 1)
       };
       let resp = await axios.get("/api/chicken/", { params });
       this.post = resp.data.post;
@@ -137,13 +141,15 @@ export default {
 
       this.favorite = resp.data.favorite;
       this.comment = resp.data.comment;
-      console.log(resp.data);
       this.$nextTick().then(() => {
         this.$scrollTo("#js-home");
       });
+      this.loading = false;
     }
   },
-  created: async function() {
+  created: async function () {
+    let resp = await axios.get("/api/max-pid/", {});
+    this.maxPid = resp.data || 500;
     await this.getContent();
   },
   beforeMount() {

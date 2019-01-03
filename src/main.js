@@ -15,6 +15,10 @@ Vue.use(VueScrollTo);
 moment.locale("zh-cn");
 Vue.prototype.$moment = moment;
 
+Vue.prototype.$sleep = time => {
+  return new Promise(resolve => setTimeout(resolve, time));
+};
+
 Vue.use(VueTimeago, {
   name: "Timeago", // Component name, `Timeago` by default
   locale: "zh-CN", // Default locale
