@@ -53,4 +53,22 @@ db.post = async function (id) {
   return data;
 };
 
+db.insertBySpider = async function (content) {
+  let sql1 = "SELECT * FROM `posts` WHERE `content` = '" + content + "'";
+  let sql2 = "INSERT INTO `posts` (`user_id`, `content`) VALUES ('1', '" + content + "')";
+
+  console.log(sql1);
+  console.log(sql2);
+
+  let posts = await pool.query(sql1);
+  let post = posts[0];
+  if (!post) {
+    let ret = await pool.query(sql2);
+    console.log("ret.affectedRows = ", ret.affectedRows);
+    return ret.affectedRows;
+  }
+
+  return 0;
+};
+
 module.exports = db;
