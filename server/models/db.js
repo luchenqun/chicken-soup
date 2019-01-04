@@ -1,4 +1,4 @@
-var mysql = require('promise-mysql');
+var mysql = require("promise-mysql");
 var pool = mysql.createPool({
   host: "127.0.0.1",
   user: "test", // mysql的账号
@@ -12,7 +12,7 @@ var pool = mysql.createPool({
 
 var db = {};
 
-db.user = async function (id) {
+db.user = async function(id) {
   let sql1 = "SELECT * FROM `users` WHERE `uid` = '" + id + "'";
   let sql2 = "select count(user_id) as postNum FROM `posts` WHERE `user_id` = '" + id + "'";
   let sql3 = "select count(user_id) as favoriteNum  FROM `links` WHERE `user_id` = '" + id + "' AND `type` = '0'";
@@ -23,9 +23,9 @@ db.user = async function (id) {
   let data = Object.assign(user[0], postNum[0], favoriteNum[0]);
 
   return data;
-}
+};
 
-db.post = async function (id) {
+db.post = async function(id) {
   let sql1 = "SELECT * FROM `posts` WHERE `pid` = '" + id + "'";
   let sql2 = "SELECT favorite.*, u.uid, u.nickname FROM `links` as favorite LEFT OUTER JOIN users as u ON favorite.link_id = u.uid  WHERE `post_id` = '" + id + "' AND `type` = '0'";
   let sql3 = "SELECT comment.*, u.uid, u.nickname, u.avatar, u.account FROM `links` as comment LEFT OUTER JOIN users as u ON comment.link_id = u.uid  WHERE `post_id` = '" + id + "' AND `type` = '1'";
@@ -38,7 +38,7 @@ db.post = async function (id) {
   let user = null;
   let post = posts[0];
   if (post) {
-    (post.imgs) && (post.imgs = JSON.parse(post.imgs));
+    post.imgs && (post.imgs = JSON.parse(post.imgs));
     user = await db.user(post.user_id);
   }
 
@@ -49,29 +49,31 @@ db.post = async function (id) {
     user,
     favorite,
     comment
-  }
+  };
   return data;
 };
 
-db.insertBySpider = async function (content) {
-  let sql1 = "SELECT * FROM `posts` WHERE `content` = '" + content + "'";
-  let sql2 = "INSERT INTO `posts` (`user_id`, `content`) VALUES ('1', '" + content + "')";
+db.insertBySpider = async function(data) {
+  let keys = "";
+  let valus = "";
+  let count = 0;
+  for (let prop in data) {
+    count && (keys += ",");
+    keys += prop;
 
-  console.log(sql1);
-  console.log(sql2);
+    count && (valus += ",");
+    valus += data[prop];
 
-  let posts = await pool.query(sql1);
-  let post = posts[0];
-  if (!post) {
-    let ret = await pool.query(sql2);
-    console.log("ret.affectedRows = ", ret.affectedRows);
-    return ret.affectedRows;
+    count++;
   }
 
-  return 0;
+  let sql = `REPLACE INTO posts (${keys}) VALUES (${valus})`;
+  console.log(sql);
+  let ret = await pool.query(sql);
+  return ret.affectedRows;
 };
 
-db.postMaxPid = async function () {
+db.postMaxPid = async function() {
   let sql1 = "select max(pid) as maxPid from posts";
 
   console.log(sql1);
@@ -79,7 +81,8 @@ db.postMaxPid = async function () {
   let results = await pool.query(sql1);
   let ret = results[0];
   return ret ? ret.maxPid : 0;
-
 };
+
+db.updateId = async function(items) {};
 
 module.exports = db;

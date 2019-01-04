@@ -37,6 +37,59 @@ CREATE TABLE `terms` (
   `name` varchar(255) DEFAULT NULL,         -- 类型
   PRIMARY KEY (`tid`)
 );
+INSERT INTO `terms` VALUES ('1', '心灵毒汤');
+INSERT INTO `terms` VALUES ('2', '表情包');
+INSERT INTO `terms` VALUES ('3', '搞笑图片');
+INSERT INTO `terms` VALUES ('4', '搞笑动态图片');
+INSERT INTO `terms` VALUES ('5', '神回复');
+INSERT INTO `terms` VALUES ('6', '神吐槽');
+INSERT INTO `terms` VALUES ('7', '神转折');
+INSERT INTO `terms` VALUES ('8', '段子');
+INSERT INTO `terms` VALUES ('9', '污段子');
+INSERT INTO `terms` VALUES ('10', '搞笑对话段子');
+INSERT INTO `terms` VALUES ('11', '内涵段子');
+INSERT INTO `terms` VALUES ('12', '糗事段子');
+INSERT INTO `terms` VALUES ('13', '新闻有才评论');
+INSERT INTO `terms` VALUES ('14', '娱乐搞笑');
+INSERT INTO `terms` VALUES ('15', 'IT科技搞笑');
+INSERT INTO `terms` VALUES ('16', '爱情笑话');
+INSERT INTO `terms` VALUES ('17', '男女笑话');
+INSERT INTO `terms` VALUES ('18', '家庭笑话');
+INSERT INTO `terms` VALUES ('19', '夫妻笑话');
+INSERT INTO `terms` VALUES ('20', '儿童笑话');
+INSERT INTO `terms` VALUES ('21', '成人笑话');
+INSERT INTO `terms` VALUES ('22', '职场笑话');
+INSERT INTO `terms` VALUES ('23', '官场笑话');
+INSERT INTO `terms` VALUES ('24', '大学笑话');
+INSERT INTO `terms` VALUES ('25', '寝室笑话');
+INSERT INTO `terms` VALUES ('26', '古代笑话');
+INSERT INTO `terms` VALUES ('27', '校园笑话');
+INSERT INTO `terms` VALUES ('28', '课堂笑话');
+INSERT INTO `terms` VALUES ('29', '动物笑话');
+INSERT INTO `terms` VALUES ('30', '口误笑话');
+INSERT INTO `terms` VALUES ('31', '地域笑话');
+INSERT INTO `terms` VALUES ('32', '名人笑话');
+INSERT INTO `terms` VALUES ('33', '笑话');
+INSERT INTO `terms` VALUES ('34', '冷笑话');
+INSERT INTO `terms` VALUES ('35', '短笑话');
+INSERT INTO `terms` VALUES ('36', '经典语录');
+INSERT INTO `terms` VALUES ('37', '情感语录');
+INSERT INTO `terms` VALUES ('38', '人生感悟');
+INSERT INTO `terms` VALUES ('39', '正能量语录');
+INSERT INTO `terms` VALUES ('40', '心灵鸡汤');
+INSERT INTO `terms` VALUES ('41', '名人名言');
+INSERT INTO `terms` VALUES ('42', '短句子');
+INSERT INTO `terms` VALUES ('43', '优美句子');
+INSERT INTO `terms` VALUES ('44', '诗词名句');
+INSERT INTO `terms` VALUES ('45', '小故事');
+INSERT INTO `terms` VALUES ('46', '幽默故事');
+INSERT INTO `terms` VALUES ('47', '打油诗');
+INSERT INTO `terms` VALUES ('48', '顺口溜');
+INSERT INTO `terms` VALUES ('49', '极品图');
+INSERT INTO `terms` VALUES ('50', '搞笑改歌词');
+INSERT INTO `terms` VALUES ('51', '网购神评论');
+INSERT INTO `terms` VALUES ('52', '搞笑微博');
+
 
 -- 关联(收藏，评论)
 drop table if exists links;
