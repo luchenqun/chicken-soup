@@ -39,15 +39,24 @@
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
         <v-layout row wrap>
-          <v-flex xs3>
-            <p class="text-sm-left">浏览 {{joke.see}} 次</p>
+          <v-flex xs5>
+            <p class="text-sm-left">
+              <span>{{ this.types[joke.type] }}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;浏览 {{joke.see}} 次
+            </p>
           </v-flex>
           <v-flex xs4></v-flex>
-          <v-flex xs5>
-            <v-layout align-center justify-space-around>
-              <v-icon size="25">favorite_border</v-icon>
-              <v-icon size="25">chat</v-icon>
-              <v-icon size="25">fas fa-share</v-icon>
+          <v-flex xs3>
+            <v-layout align-right justify-space-around style="margin-top:-12px;">
+              <v-spacer></v-spacer>
+              <v-btn icon v-if="favorited" @click="like">
+                <v-icon size="25" color="red">favorite</v-icon>
+              </v-btn>
+              <v-btn icon v-else @click="like">
+                <v-icon size="25">favorite_border</v-icon>
+              </v-btn>
+              <!-- <v-icon size="25">chat</v-icon>
+              <v-icon size="25">fas fa-share</v-icon>-->
             </v-layout>
           </v-flex>
         </v-layout>
@@ -58,7 +67,7 @@
           {{ favorite.map(item => item.nickname ).join("，")}} {{favorite.length}} 人收藏
         </p>
       </v-container>
-      <v-container fluid style="padding:0px 8px 0px 0px;">
+      <v-content fluid>
         <v-container fluid style="padding:8px 8px 0px 8px;" v-if="!loading && comment.length > 0">
           <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comment" :key="c.lid">
             <div style="width:40px;height:40px;float:left">
@@ -89,11 +98,13 @@
               </v-btn>
             </v-flex>
             <v-flex xs6>
-              <v-btn small color="primary" style="margin:5px 0px 0px 0px;float:right">发送评论</v-btn>
+              <v-btn flat icon color="green" style="margin:5px 0px 0px 0px;float:right">
+                <v-icon>send</v-icon>
+              </v-btn>
             </v-flex>
           </v-layout>
         </v-content>
-      </v-container>
+      </v-content>
       <div class="text-xs-center">
         <v-btn fab dark large :loading="loading" color="green darken-2" @click="getContent">
           <v-icon x-large dark>autorenew</v-icon>
@@ -114,9 +125,13 @@ export default {
     joke: {},
     user: {},
     content: "",
+    favorited: false,
     favorite: [],
     loading: false,
-    types: [],
+    types: {
+      "1": "心灵毒汤"
+    },
+    user_id: "",
     users: [],
     comment: []
   }),
@@ -124,9 +139,12 @@ export default {
     async getContent() {
       this.content = "";
       this.loading = true;
+      this.favorited = false;
       await this.$sleep(Math.random() * 1000)
-
-      let resp = await axios.get("/api/joke/", {});
+      let params = {
+        // id: 1
+      }
+      let resp = await axios.get("/api/joke/", {params});
       this.joke = resp.data.joke;
       this.user = {};
       for (let user of this.users) {
@@ -155,15 +173,55 @@ export default {
 
       this.favorite = resp.data.favorite;
       this.comment = resp.data.comment;
+
+      if (this.user_id > 0) {
+        for (const fav of this.favorite) {
+          if (fav.link_id == this.user_id) {
+            this.favorited = true;
+            break;
+          }
+        }
+      }
+
       this.$nextTick().then(() => {
         this.$scrollTo("#js-home");
       });
       this.loading = false;
+    },
+    async like() {
+      if (this.favorited) {
+        let lid = -1;
+        for (const fav of this.favorite) {
+          if (fav.link_id == this.user_id) {
+            lid = fav.lid;
+            break;
+          }
+        }
+        let params = {
+          lid: lid,
+        }
+        let resp = await axios.post("/api/del-link/", params);
+      } else {
+        if (this.user_id < 0) {
+          alert("请先登录......");
+          return;
+        }
+        let params = {
+          joke_id: this.joke.pid,
+          user_id: this.joke.user_id,
+          link_id: this.user_id
+        }
+        let resp = await axios.post("/api/add-favorite/", params);
+      }
+      this.favorited = !this.favorited;
     }
   },
   created: async function () {
     let resp = await axios.get("/api/types/", {});
-    this.types = resp.data;
+    for (let item of resp.data) {
+      this.types[item.type] = item.title;
+    }
+    this.user_id = localStorage.getItem('user_id') || (-1);
     await this.getContent();
   },
   beforeMount() {

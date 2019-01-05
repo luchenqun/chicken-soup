@@ -2,6 +2,8 @@ var Router = require("koa-router");
 var db = require("../models/db.js");
 let fs = require("fs");
 let path = require("path");
+const crypto = require('crypto');
+const salt = "i love yijia";
 
 var api = function () {
   const router = Router();
@@ -26,6 +28,41 @@ var api = function () {
       config = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "config.default.json"), 'utf8'));
     }
     ctx.body = config.items;
+  });
+
+  router.post("/login", async ctx => {
+    let {
+      account,
+      password
+    } = ctx.request.body;
+    let passwordHash = crypto.createHmac('sha256', password).update(salt).digest('hex');
+    let data = await db.login(account, passwordHash);
+    ctx.body = data || {};
+  });
+
+  router.post("/sign-up", async ctx => {
+    let {
+      account,
+      nickname,
+      password,
+      email
+    } = ctx.request.body;
+    let passwordHash = crypto.createHmac('sha256', password).update(salt).digest('hex');
+    let data = await db.signUp(account, nickname, passwordHash, email);
+    ctx.body = data;
+  });
+
+  router.post("/del-link", async ctx => {
+    let {
+      lid,
+    } = ctx.request.body;
+    let data = await db.delLink(lid);
+    ctx.body = data;
+  });
+
+  router.post("/add-favorite", async ctx => {
+    let data = await db.insert(ctx.request.body, "links");
+    ctx.body = data;
   });
 
   return router.routes();

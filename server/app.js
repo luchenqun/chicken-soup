@@ -98,11 +98,11 @@ setInterval(async () => {
 
   // console.log(pid, JSON.stringify(content), item.type, date, JSON.stringify(imgs), see + 1, comments);
 
-  let affectedRows = await db.insertBySpider(data, "jokes");
+  let affectedRows = await db.insert(data, "jokes");
 
   if (affectedRows === 1) {
     for (const comment of comments) {
-      await db.insertBySpider(comment, "links");
+      await db.insert(comment, "links");
     }
   }
 

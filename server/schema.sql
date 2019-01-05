@@ -6,7 +6,7 @@ CREATE TABLE `users` (
   `nickname` varchar(255) DEFAULT NULL,     -- 昵称
   `password` varchar(255) DEFAULT NULL,     -- 密码
   `email` varchar(255) DEFAULT NULL,        -- 邮箱
-  `avatar` varchar(255) DEFAULT NULL,       -- 上传头像
+  `avatar` varchar(1024) DEFAULT NULL,       -- 上传头像
   `registered` datetime DEFAULT now(),      -- 创建时间
   `role` tinyint(4) DEFAULT '1',            -- 状态 0 管理员 1 普通
   `last_login` datetime DEFAULT now(),      -- 最后一次登录时间
@@ -21,10 +21,10 @@ drop table if exists jokes;
 CREATE TABLE `jokes` (
   `pid` int(11) NOT NULL AUTO_INCREMENT,    -- pid
   `user_id` int(11) DEFAULT NULL,           -- 用户id
-  `content` varchar(4096) DEFAULT NULL,     -- 内容
+  `content` varchar(8192) DEFAULT NULL,     -- 内容
   `type` tinyint(4) DEFAULT '1',            -- 类型 0 毒汤 1 鸡汤 
   `created_at` datetime DEFAULT now(),      -- 创建时间
-  `imgs` varchar(255) DEFAULT NULL,         -- 上传图片
+  `imgs` varchar(2048) DEFAULT NULL,        -- 上传图片
   `see` int(11) NOT NULL DEFAULT '1',       -- 浏览次数
   `status` tinyint(4) DEFAULT '1',          -- 状态 0 待审核 1 审核通过 2 删除 
   PRIMARY KEY (`pid`)

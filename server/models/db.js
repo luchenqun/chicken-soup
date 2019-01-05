@@ -24,11 +24,56 @@ db.user = async function (uid) {
   return data;
 };
 
+db.login = async function (account, password) {
+  let sql = "SELECT * FROM `users` WHERE `account` = '" + account + "' AND `password` = '" + password + "'";
+  let user = await pool.query(sql);
+  return user[0];
+};
+
+db.signUp = async function (account, nickname, password, email) {
+  let sql = "INSERT INTO `users` (`account`, `nickname`, `password`, `email`) VALUES ('" + account + "', '" + nickname + "', '" + password + "', '" + email + "')";
+  try {
+    let ret = await pool.query(sql);
+    return {
+      uid: ret.insertId
+    };
+  } catch (error) {
+    return {
+      error: error.message
+    }
+  }
+};
+
+db.delLink = async function (lid) {
+  let sql = "DELETE FROM `links` WHERE (`lid`='" + lid + "')";
+  let ret = await pool.query(sql);
+  return ret;
+};
+
+db.updateJoke = async function (pid, data) {
+  // UPDATE `jokes` SET `type`='10', `see`='2' WHERE (`pid`='1')
+  let sql = "UPDATE `jokes` SET ";
+  let count = 0;
+  for (let prop in data) {
+    count && (sql += ", ");
+    sql += `\`${prop}\`='${data[prop]}'`;
+    count++;
+  }
+  sql += " WHERE (`pid`='" + pid + "')";
+
+  let ret = await pool.query(sql);
+  return ret.affectedRows;
+}
+
 db.joke = async function (id) {
   let sql1 = id ? "SELECT * FROM `jokes` WHERE `pid` = '" + id + "'" : "SELECT * FROM `jokes` ORDER BY RAND() LIMIT 1";
   let jokes = await pool.query(sql1);
   let joke = jokes[0];
   if (joke) {
+    joke.see = parseInt(joke.see) + 1; // 默认访问+1
+    await db.updateJoke(joke.pid, {
+      see: joke.see
+    });
     joke.imgs && (joke.imgs = JSON.parse(joke.imgs));
     id = joke.pid;
   }
@@ -46,7 +91,7 @@ db.joke = async function (id) {
   return data;
 };
 
-db.insertBySpider = async function (data, table) {
+db.insert = async function (data, table) {
   let keys = "";
   let valus = "";
   let count = 0;
