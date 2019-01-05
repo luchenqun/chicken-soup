@@ -17,8 +17,8 @@ CREATE TABLE `users` (
 );
 
 -- 发表内容
-drop table if exists posts;
-CREATE TABLE `posts` (
+drop table if exists jokes;
+CREATE TABLE `jokes` (
   `pid` int(11) NOT NULL AUTO_INCREMENT,    -- pid
   `user_id` int(11) DEFAULT NULL,           -- 用户id
   `content` varchar(4096) DEFAULT NULL,     -- 内容
@@ -30,7 +30,7 @@ CREATE TABLE `posts` (
   PRIMARY KEY (`pid`)
 );
 
--- 对posts里面的type做类型说明
+-- 对jokes里面的type做类型说明
 drop table if exists terms;
 CREATE TABLE `terms` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,    -- tid
@@ -95,7 +95,7 @@ INSERT INTO `terms` VALUES ('52', '搞笑微博');
 drop table if exists links;
 CREATE TABLE `links` (
   `lid` int(11) NOT NULL AUTO_INCREMENT,    -- lid
-  `post_id` int(11) DEFAULT NULL,           -- 内容id
+  `joke_id` int(11) DEFAULT NULL,           -- 内容id
   `user_id` int(11) DEFAULT NULL,           -- 用户id(谁写的)
   `link_id` int(11) DEFAULT NULL,           -- 用户id(谁来评论或者收藏的)
   `date` datetime DEFAULT now(),            -- 创建时间

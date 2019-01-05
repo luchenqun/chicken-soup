@@ -5,15 +5,9 @@ var api = function() {
 
   router.prefix("/api");
 
-  router.get("/chicken", async ctx => {
-    console.log(ctx.query);
-    let id = ctx.query.id;
-    let data = await db.post(id);
+  router.get("/joke", async ctx => {
+    let data = await db.joke(ctx.query.id);
     ctx.body = data;
-  });
-
-  router.get("/max-pid", async ctx => {
-    ctx.body = await db.postMaxPid();
   });
 
   return router.routes();

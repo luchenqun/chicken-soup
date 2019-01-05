@@ -1,51 +1,48 @@
-var mysql = require("promise-mysql");
-var pool = mysql.createPool({
-  host: "127.0.0.1",
-  user: "test", // mysql的账号
-  password: "123456", // mysql 的密码
-  database: "chicken_soup",
-  multipleStatements: true,
-  useConnectionPooling: true,
-  connectionLimit: 10,
-  port: 3306
-});
+let mysql = require("promise-mysql");
+let fs = require("fs");
+let path = require("path");
+let config = {}
+try {
+  config = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "config.json"), 'utf8'));
+} catch (error) {
+  config = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "config.default.json"), 'utf8'));
+}
+var pool = mysql.createPool(config.db);
 
 var db = {};
 
-db.user = async function(id) {
-  let sql1 = "SELECT * FROM `users` WHERE `uid` = '" + id + "'";
-  let sql2 = "select count(user_id) as postNum FROM `posts` WHERE `user_id` = '" + id + "'";
-  let sql3 = "select count(user_id) as favoriteNum  FROM `links` WHERE `user_id` = '" + id + "' AND `type` = '0'";
+db.user = async function (uid) {
+  let sql1 = "SELECT * FROM `users` WHERE `uid` = '" + uid + "'";
+  let sql2 = "select count(user_id) as jokeNum FROM `jokes` WHERE `user_id` = '" + uid + "'";
+  let sql3 = "select count(user_id) as favoriteNum  FROM `links` WHERE `user_id` = '" + uid + "' AND `type` = '0'";
   let user = await pool.query(sql1);
-  let postNum = await pool.query(sql2);
+  let jokeNum = await pool.query(sql2);
   let favoriteNum = await pool.query(sql3);
 
-  let data = Object.assign(user[0], postNum[0], favoriteNum[0]);
+  let data = Object.assign(user[0], jokeNum[0], favoriteNum[0]);
 
   return data;
 };
 
-db.post = async function(id) {
-  let sql1 = "SELECT * FROM `posts` WHERE `pid` = '" + id + "'";
-  let sql2 = "SELECT favorite.*, u.uid, u.nickname FROM `links` as favorite LEFT OUTER JOIN users as u ON favorite.link_id = u.uid  WHERE `post_id` = '" + id + "' AND `type` = '0'";
-  let sql3 = "SELECT comment.*, u.uid, u.nickname, u.avatar, u.account FROM `links` as comment LEFT OUTER JOIN users as u ON comment.link_id = u.uid  WHERE `post_id` = '" + id + "' AND `type` = '1'";
-
-  console.log(sql1);
-  console.log(sql2);
-  console.log(sql3);
-
-  let posts = await pool.query(sql1);
+db.joke = async function (id) {
+  console.log(id);
+  let sql1 = id ? "SELECT * FROM `jokes` WHERE `pid` = '" + id + "'" : "SELECT * FROM `jokes` ORDER BY RAND() LIMIT 1";
+  let jokes = await pool.query(sql1);
   let user = null;
-  let post = posts[0];
-  if (post) {
-    post.imgs && (post.imgs = JSON.parse(post.imgs));
-    user = await db.user(post.user_id);
+  let joke = jokes[0];
+  if (joke) {
+    joke.imgs && (joke.imgs = JSON.parse(joke.imgs));
+    id = joke.pid;
+    user = await db.user(joke.user_id);
   }
+
+  let sql2 = "SELECT favorite.*, u.uid, u.nickname FROM `links` as favorite LEFT OUTER JOIN users as u ON favorite.link_id = u.uid  WHERE `joke_id` = '" + id + "' AND `type` = '0'";
+  let sql3 = "SELECT comment.*, u.uid, u.nickname, u.avatar, u.account FROM `links` as comment LEFT OUTER JOIN users as u ON comment.link_id = u.uid  WHERE `joke_id` = '" + id + "' AND `type` = '1'";
 
   let favorite = await pool.query(sql2);
   let comment = await pool.query(sql3);
   let data = {
-    post,
+    joke,
     user,
     favorite,
     comment
@@ -53,7 +50,7 @@ db.post = async function(id) {
   return data;
 };
 
-db.insertBySpider = async function(data) {
+db.insertBySpider = async function (data, table) {
   let keys = "";
   let valus = "";
   let count = 0;
@@ -67,22 +64,10 @@ db.insertBySpider = async function(data) {
     count++;
   }
 
-  let sql = `REPLACE INTO posts (${keys}) VALUES (${valus})`;
-  console.log(sql);
+  let sql = `REPLACE INTO ${table} (${keys}) VALUES (${valus})`;
+  // console.log(sql);
   let ret = await pool.query(sql);
   return ret.affectedRows;
 };
-
-db.postMaxPid = async function() {
-  let sql1 = "select max(pid) as maxPid from posts";
-
-  console.log(sql1);
-
-  let results = await pool.query(sql1);
-  let ret = results[0];
-  return ret ? ret.maxPid : 0;
-};
-
-db.updateId = async function(items) {};
 
 module.exports = db;
