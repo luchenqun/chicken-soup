@@ -25,15 +25,12 @@ db.user = async function (uid) {
 };
 
 db.joke = async function (id) {
-  console.log(id);
   let sql1 = id ? "SELECT * FROM `jokes` WHERE `pid` = '" + id + "'" : "SELECT * FROM `jokes` ORDER BY RAND() LIMIT 1";
   let jokes = await pool.query(sql1);
-  let user = null;
   let joke = jokes[0];
   if (joke) {
     joke.imgs && (joke.imgs = JSON.parse(joke.imgs));
     id = joke.pid;
-    user = await db.user(joke.user_id);
   }
 
   let sql2 = "SELECT favorite.*, u.uid, u.nickname FROM `links` as favorite LEFT OUTER JOIN users as u ON favorite.link_id = u.uid  WHERE `joke_id` = '" + id + "' AND `type` = '0'";
@@ -43,7 +40,6 @@ db.joke = async function (id) {
   let comment = await pool.query(sql3);
   let data = {
     joke,
-    user,
     favorite,
     comment
   };

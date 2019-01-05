@@ -30,14 +30,14 @@
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;">
         <div class="text-xs-center" v-if="loading">
-          <v-progress-circular :size="70" :width="7" color="purple" indeterminate></v-progress-circular>
+          <v-progress-linear :indeterminate="true"></v-progress-linear>
         </div>
         <span style="font-size:20px;" v-else v-html="joke.content"></span>
       </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="joke.imgs">
+      <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
         <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index">
       </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;height:25px">
+      <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
         <v-layout row wrap>
           <v-flex xs3>
             <p class="text-sm-left">浏览 {{joke.see}} 次</p>
@@ -59,7 +59,7 @@
         </p>
       </v-container>
       <v-container fluid style="padding:0px 8px 0px 0px;">
-        <v-container fluid style="padding:8px 8px 0px 8px;" v-if="comment.length > 0">
+        <v-container fluid style="padding:8px 8px 0px 8px;" v-if="!loading && comment.length > 0">
           <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comment" :key="c.lid">
             <div style="width:40px;height:40px;float:left">
               <v-avatar size="40" color="grey lighten-4">
@@ -77,7 +77,7 @@
             </div>
           </v-content>
         </v-container>
-        <v-container fluid>
+        <v-content style="padding:12px 8px 8px 8px;">
           <v-divider style="background-color:#949494"></v-divider>
           <v-textarea color="teal" clearable hide-details maxlength="120">
             <div slot="label">评论</div>
@@ -92,7 +92,7 @@
               <v-btn small color="primary" style="margin:5px 0px 0px 0px;float:right">发送评论</v-btn>
             </v-flex>
           </v-layout>
-        </v-container>
+        </v-content>
       </v-container>
       <div class="text-xs-center">
         <v-btn fab dark large :loading="loading" color="green darken-2" @click="getContent">
@@ -116,60 +116,8 @@ export default {
     content: "",
     favorite: [],
     loading: false,
-    types: [
-      { pinyin: "bqb", type: 1, title: "心灵毒汤" },
-      { pinyin: "bqb", type: 2, title: "表情包" },
-      { pinyin: "gaoxiaotu", type: 3, title: "搞笑图片" },
-      { pinyin: "gaoxiaogif", type: 4, title: "搞笑动态图片" },
-      { pinyin: "shenhuifu", type: 5, title: "神回复" },
-      { pinyin: "shentucao", type: 6, title: "神吐槽" },
-      { pinyin: "shenzhuanzhe", type: 7, title: "神转折" },
-      { pinyin: "duanzi", type: 8, title: "段子" },
-      { pinyin: "wuduanzi", type: 9, title: "污段子" },
-      { pinyin: "gaoxiaoduihua", type: 10, title: "搞笑对话段子" },
-      { pinyin: "neihanduanzi", type: 11, title: "内涵段子" },
-      { pinyin: "qiushi", type: 12, title: "糗事段子" },
-      { pinyin: "shehui", type: 13, title: "新闻有才评论" },
-      { pinyin: "yule", type: 14, title: "娱乐搞笑" },
-      { pinyin: "keji", type: 15, title: "IT科技搞笑" },
-      { pinyin: "aiqingxiaohua", type: 16, title: "爱情笑话" },
-      { pinyin: "nannuxiaohua", type: 17, title: "男女笑话" },
-      { pinyin: "jiatingxiaohua", type: 18, title: "家庭笑话" },
-      { pinyin: "fuqixiaohua", type: 19, title: "夫妻笑话" },
-      { pinyin: "ertongxiaohua", type: 20, title: "儿童笑话" },
-      { pinyin: "chengrenxiaohua", type: 21, title: "成人笑话" },
-      { pinyin: "zhichangxiaohua", type: 22, title: "职场笑话" },
-      { pinyin: "guanchangxiaohua", type: 23, title: "官场笑话" },
-      { pinyin: "daxuexiaohua", type: 24, title: "大学笑话" },
-      { pinyin: "qinshixiaohua", type: 25, title: "寝室笑话" },
-      { pinyin: "gudaixiaohua", type: 26, title: "古代笑话" },
-      { pinyin: "xiaoyuanxiaohua", type: 27, title: "校园笑话" },
-      { pinyin: "ketangxiaohua", type: 28, title: "课堂笑话" },
-      { pinyin: "dongwuxiaohua", type: 29, title: "动物笑话" },
-      { pinyin: "kouwuxiaohua", type: 30, title: "口误笑话" },
-      { pinyin: "diyuxiaohua", type: 31, title: "地域笑话" },
-      { pinyin: "mingrenxiaohua", type: 32, title: "名人笑话" },
-      { pinyin: "xiaohua", type: 33, title: "笑话" },
-      { pinyin: "lengxiaohua", type: 34, title: "冷笑话" },
-      { pinyin: "duanxiaohua", type: 35, title: "短笑话" },
-      { pinyin: "yulu", type: 36, title: "经典语录" },
-      { pinyin: "qgyl", type: 37, title: "情感语录" },
-      { pinyin: "ganwu", type: 38, title: "人生感悟" },
-      { pinyin: "znlyl", type: 39, title: "正能量语录" },
-      { pinyin: "jitang", type: 40, title: "心灵鸡汤" },
-      { pinyin: "mingyan", type: 41, title: "名人名言" },
-      { pinyin: "duanjuzi", type: 42, title: "短句子" },
-      { pinyin: "meiju", type: 43, title: "优美句子" },
-      { pinyin: "shici", type: 44, title: "诗词名句" },
-      { pinyin: "xiaogushi", type: 45, title: "小故事" },
-      { pinyin: "youmogushi", type: 46, title: "幽默故事" },
-      { pinyin: "dayoushi", type: 47, title: "打油诗" },
-      { pinyin: "shunkouliu", type: 48, title: "顺口溜" },
-      { pinyin: "jipintu", type: 49, title: "极品图" },
-      { pinyin: "gaigeci", type: 50, title: "搞笑改歌词" },
-      { pinyin: "wanggou", type: 51, title: "网购神评论" },
-      { pinyin: "gaoxiaoweibo", type: 52, title: "搞笑微博" }
-    ],
+    types: [],
+    users: [],
     comment: []
   }),
   methods: {
@@ -180,7 +128,22 @@ export default {
 
       let resp = await axios.get("/api/joke/", {});
       this.joke = resp.data.joke;
-      this.user = resp.data.user;
+      this.user = {};
+      for (let user of this.users) {
+        if (user.uid === this.joke.user_id) {
+          this.user = user;
+          break;
+        }
+      }
+      if (!this.user.uid) {
+        let params = {
+          id: this.joke.user_id
+        }
+        let resp = await axios.get("/api/user/", { params });
+        this.user = resp.data;
+        this.users.push(this.user);
+      }
+
       if (!this.user.avatar) {
         this.$set(this.user, "avatar", "data:image/png;base64," + new Identicon(md5(this.user.account)).toString());
       }
@@ -199,6 +162,8 @@ export default {
     }
   },
   created: async function () {
+    let resp = await axios.get("/api/types/", {});
+    this.types = resp.data;
     await this.getContent();
   },
   beforeMount() {

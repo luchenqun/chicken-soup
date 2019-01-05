@@ -97,7 +97,6 @@ setInterval(async () => {
   };
 
   // console.log(pid, JSON.stringify(content), item.type, date, JSON.stringify(imgs), see + 1, comments);
-  console.log(pid);
 
   let affectedRows = await db.insertBySpider(data, "jokes");
 
@@ -109,7 +108,7 @@ setInterval(async () => {
 
   spidering = false;
   index++;
-  if (index % 1000 === 0) {
+  if (index % 200 === 0) {
     fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config));
   }
 }, 3000);
