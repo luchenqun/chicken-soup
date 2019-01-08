@@ -15,9 +15,10 @@
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "lowdb": "^1.0.0",
-    "promise-mysql": "^3.3.1",
+    "mysql2": "^1.6.4",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "sequelize": "^4.42.0"
   },
   "devDependencies": {}
 }

@@ -84,7 +84,7 @@ export default {
         password: this.password
       }
       let resp = await axios.post("/api/login/", params);
-      let user = resp.data;
+      let user = resp.data.user;
       this.snackbar = true;
       if (user.uid) {
         this.message = "登陆成功";
@@ -107,10 +107,9 @@ export default {
         email: this.email
       }
       let resp = await axios.post("/api/sign-up/", params);
-      let user = resp.data;
-      console.log(user);
+      let user = resp.data.user;
       this.snackbar = true;
-      if (user.uid) {
+      if (user && user.uid) {
         this.message = "注册成功";
         this.loginSignUpShow = 0;
         localStorage.setItem("user_id", user.uid);
@@ -118,7 +117,7 @@ export default {
         this.welcome = "欢迎你，" + this.nickname;
         this.logined = true;
       } else {
-        this.message = "注册失败，信息：" + user.error;
+        this.message = "注册失败，信息：" + resp.data.message;
         this.account = "";
         this.email = "";
       }

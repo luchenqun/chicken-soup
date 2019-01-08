@@ -21,7 +21,7 @@
                   </p>
                 </v-flex>
                 <v-flex xs12 style="height:25px;">
-                  <p class="text-sm-left" style="font-size:15px;">共发表 {{user.jokeNum}} 条，被收藏 {{user.favoriteNum}} 次</p>
+                  <p class="text-sm-left" style="font-size:15px;">共发表 {{user.jokeNum}} 条，被收藏评论 {{user.favoriteNum}} 次</p>
                 </v-flex>
               </v-layout>
             </v-content>
@@ -39,13 +39,13 @@
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
         <v-layout row wrap>
-          <v-flex xs5>
+          <v-flex xs7>
             <p class="text-sm-left">
               <span>{{ this.types[joke.type] }}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;浏览 {{joke.see}} 次
             </p>
           </v-flex>
-          <v-flex xs4></v-flex>
+          <v-flex xs2></v-flex>
           <v-flex xs3>
             <v-layout align-right justify-space-around style="margin-top:-12px;">
               <v-spacer></v-spacer>
@@ -61,15 +61,15 @@
           </v-flex>
         </v-layout>
       </v-container>
-      <v-container fluid style="padding:3px 8px 0px 8px;" v-if="favorite.length > 0">
+      <v-container fluid style="padding:3px 8px 0px 8px;" v-if="favorites.length > 0">
         <p class="text-sm-left" style="margin:0px">
           <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>
-          {{ favorite.map(item => item.nickname ).join("，")}} {{favorite.length}} 人收藏
+          {{ favorites.map(item => item.nickname ).join("，")}} {{favorites.length}} 人收藏
         </p>
       </v-container>
       <v-content fluid>
-        <v-container fluid style="padding:8px 8px 0px 8px;" v-if="!loading && comment.length > 0">
-          <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comment" :key="c.lid">
+        <v-container fluid style="padding:8px 8px 0px 8px;" v-if="!loading && comments.length > 0">
+          <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comments" :key="c.lid">
             <div style="width:40px;height:40px;float:left">
               <v-avatar size="40" color="grey lighten-4">
                 <img :src="c.avatar" alt="avatar">
@@ -126,14 +126,14 @@ export default {
     user: {},
     content: "",
     favorited: false,
-    favorite: [],
+    favorites: [],
     loading: false,
     types: {
       "1": "心灵毒汤"
     },
     user_id: "",
     users: [],
-    comment: []
+    comments: []
   }),
   methods: {
     async getContent() {
@@ -144,7 +144,7 @@ export default {
       let params = {
         // id: 1
       }
-      let resp = await axios.get("/api/joke/", {params});
+      let resp = await axios.get("/api/joke/", { params });
       this.joke = resp.data.joke;
       this.user = {};
       for (let user of this.users) {
@@ -158,24 +158,24 @@ export default {
           id: this.joke.user_id
         }
         let resp = await axios.get("/api/user/", { params });
-        this.user = resp.data;
+        this.user = resp.data.user;
         this.users.push(this.user);
       }
 
       if (!this.user.avatar) {
         this.$set(this.user, "avatar", "data:image/png;base64," + new Identicon(md5(this.user.account)).toString());
       }
-      for (let c of resp.data.comment) {
+      for (let c of resp.data.comments) {
         if (!c.avatar) {
           this.$set(c, "avatar", "data:image/png;base64," + new Identicon(md5(c.account)).toString());
         }
       }
 
-      this.favorite = resp.data.favorite;
-      this.comment = resp.data.comment;
+      this.favorites = resp.data.favorites;
+      this.comments = resp.data.comments;
 
       if (this.user_id > 0) {
-        for (const fav of this.favorite) {
+        for (const fav of this.favorites) {
           if (fav.link_id == this.user_id) {
             this.favorited = true;
             break;
@@ -191,7 +191,7 @@ export default {
     async like() {
       if (this.favorited) {
         let lid = -1;
-        for (const fav of this.favorite) {
+        for (const fav of this.favorites) {
           if (fav.link_id == this.user_id) {
             lid = fav.lid;
             break;
@@ -203,7 +203,7 @@ export default {
         let resp = await axios.post("/api/del-link/", params);
       } else {
         if (this.user_id < 0) {
-          alert("请先登录......");
+          alert("请先点击右上角按钮登录......");
           return;
         }
         let params = {
