@@ -47,70 +47,70 @@ setInterval(async () => {
   let pid = item.id;
   let url = `http://www.360wa.com/${item.pinyin}/product/${item.id}`;
 
-  let body = await rp(url);
-  let $ = cheerio.load(body, {
-    decodeEntities: false
-  });
-
-  let title = $(".title")
-    .text()
-    .trim(); // 标题
-  let date = $(".ft")
-    .text()
-    .trim(); // 创建日期
-
-  let $content = $(".article-content").eq(0);
-  let text = $content.text().trim(); // 正文
-
-  let imgs = []; // 正文里面包含的图片
-  $content.children("img").each(function(i, elem) {
-    let src = $(this).attr("src");
-    imgs.push(src);
-  });
-
-  let comments = []; // 评论
-  $(".comment").each(function(i, elem) {
-    if (i == 0) return;
-    let comment = $(this)
-      .children("p")
-      .text()
-      .trim();
-    let date = $(this)
-      .children(".meta")
-      .text()
-      .trim();
-    comments.push({
-      joke_id: pid,
-      user_id: 1,
-      link_id: 1,
-      date: JSON.stringify(date),
-      comment: JSON.stringify(comment),
-      type: 1
-    });
-  });
-
-  let nextHref = $(".forum2").attr("href");
-  item.id = nextHref.substring(nextHref.lastIndexOf("/") + 1); // 下一个爬取的id
-
-  let see = $(`#${pid}`)
-    .text()
-    .trim(); // 创建日期
-
-  let content = (title + (title && text && "<br/>") + text).replace(/\n/g, "<br/>");
-
-  let data = {
-    pid: pid,
-    user_id: 1,
-    content: JSON.stringify(content),
-    type: item.type,
-    created_at: JSON.stringify(date),
-    imgs: JSON.stringify(JSON.stringify(imgs)),
-    see: parseInt(see) + 1
-  };
-
-  // console.log(pid, JSON.stringify(content), item.type, date, JSON.stringify(imgs), see + 1, comments);
-
   try {
+    let body = await rp(url);
+    let $ = cheerio.load(body, {
+      decodeEntities: false
+    });
+
+    let title = $(".title")
+      .text()
+      .trim(); // 标题
+    let date = $(".ft")
+      .text()
+      .trim(); // 创建日期
+
+    let $content = $(".article-content").eq(0);
+    let text = $content.text().trim(); // 正文
+
+    let imgs = []; // 正文里面包含的图片
+    $content.children("img").each(function(i, elem) {
+      let src = $(this).attr("src");
+      imgs.push(src);
+    });
+
+    let comments = []; // 评论
+    $(".comment").each(function(i, elem) {
+      if (i == 0) return;
+      let comment = $(this)
+        .children("p")
+        .text()
+        .trim();
+      let date = $(this)
+        .children(".meta")
+        .text()
+        .trim();
+      comments.push({
+        joke_id: pid,
+        user_id: 1,
+        link_id: 1,
+        date: JSON.stringify(date),
+        comment: JSON.stringify(comment),
+        type: 1
+      });
+    });
+
+    let nextHref = $(".forum2").attr("href");
+    item.id = nextHref.substring(nextHref.lastIndexOf("/") + 1); // 下一个爬取的id
+
+    let see = $(`#${pid}`)
+      .text()
+      .trim(); // 创建日期
+
+    let content = (title + (title && text && "<br/>") + text).replace(/\n/g, "<br/>");
+
+    let data = {
+      pid: pid,
+      user_id: 1,
+      content: JSON.stringify(content),
+      type: item.type,
+      created_at: JSON.stringify(date),
+      imgs: JSON.stringify(JSON.stringify(imgs)),
+      see: parseInt(see) + 1
+    };
+
+    // console.log(pid, JSON.stringify(content), item.type, date, JSON.stringify(imgs), see + 1, comments);
+
     // 插段子
     let joke = await Jokes.findOne({
       where: { pid },
