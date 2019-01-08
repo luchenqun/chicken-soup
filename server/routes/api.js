@@ -32,7 +32,6 @@ var api = function() {
         options.order = sequelize.random();
       }
       let joke = (await Jokes.findAll(options))[0];
-      console.log(joke);
       joke.imgs && (joke.imgs = JSON.parse(joke.imgs));
 
       let links = await Links.findAll({
