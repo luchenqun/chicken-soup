@@ -142,7 +142,7 @@ export default {
       this.favorited = false;
       await this.$sleep(Math.random() * 1000)
       let params = {
-        // id: 1
+        id: 333260
       }
       let resp = await axios.get("/api/joke/", { params });
       this.joke = resp.data.joke;

@@ -84,8 +84,8 @@ setInterval(async () => {
         joke_id: pid,
         user_id: 1,
         link_id: 1,
-        date: JSON.stringify(date),
-        comment: JSON.stringify(comment),
+        date: date,
+        comment: comment,
         type: 1
       });
     });
@@ -102,10 +102,10 @@ setInterval(async () => {
     let data = {
       pid: pid,
       user_id: 1,
-      content: JSON.stringify(content),
+      content: content,
       type: item.type,
-      created_at: JSON.stringify(date),
-      imgs: JSON.stringify(JSON.stringify(imgs)),
+      created_at: date,
+      imgs: JSON.stringify(imgs),
       see: parseInt(see) + 1
     };
 
