@@ -1,116 +1,118 @@
 <template>
-  <v-content style="background-color:#fff;margin: auto;height:100%" id="js-home" v-touch="{left: () => getContent()}">
-    <v-content style="width:600px;margin:60px 0px 0px 0px;">
-      <v-container fluid style="padding:8px 8px 0px 8px;">
-        <v-content page style="height:80px;margin: auto;">
-          <div style="width:80px;height:80px;float:left">
-            <v-avatar size="80" color="grey lighten-4">
-              <img :src="user.avatar" alt="avatar">
-            </v-avatar>
-          </div>
-          <div style="margin-left:90px;height:80px;">
-            <v-content fluid>
-              <v-layout row wrap>
-                <v-flex xs12 style="height:30px;">
-                  <p class="text-sm-left" style="font-size:20px;">{{user.nickname}}</p>
-                </v-flex>
-                <v-flex xs12 style="height:25px;">
-                  <p class="text-sm-left" style="font-size:15px;">
-                    第 {{user.uid}} 号会员，加入于
-                    <timeago :since="user.registered" :includeSeconds="true" :autoUpdate="1"></timeago>
-                  </p>
-                </v-flex>
-                <v-flex xs12 style="height:25px;">
-                  <p class="text-sm-left" style="font-size:15px;">共发表 {{user.jokeNum}} 条，被收藏评论 {{user.favoriteNum}} 次</p>
-                </v-flex>
-              </v-layout>
-            </v-content>
-          </div>
-        </v-content>
-      </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;">
-        <div class="text-xs-center" v-if="loading">
-          <v-progress-linear :indeterminate="true"></v-progress-linear>
-        </div>
-        <span class="joke" v-else v-html="joke.content"></span>
-      </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
-        <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index">
-      </v-container>
-      <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
-        <v-layout row wrap>
-          <v-flex xs7>
-            <p class="text-sm-left">
-              <span>{{ this.types[joke.type] }}</span>
-              &nbsp;&nbsp;&nbsp;&nbsp;浏览 {{joke.see}} 次
-            </p>
-          </v-flex>
-          <v-flex xs2></v-flex>
-          <v-flex xs3>
-            <v-layout align-right justify-space-around style="margin-top:-12px;">
-              <v-spacer></v-spacer>
-              <v-btn icon v-if="favorited" @click="like">
-                <v-icon size="25" color="red">favorite</v-icon>
-              </v-btn>
-              <v-btn icon v-else @click="like">
-                <v-icon size="25">favorite_border</v-icon>
-              </v-btn>
-              <!-- <v-icon size="25">chat</v-icon>
-              <v-icon size="25">fas fa-share</v-icon>-->
-            </v-layout>
-          </v-flex>
-        </v-layout>
-      </v-container>
-      <v-container fluid style="padding:3px 8px 0px 8px;" v-if="favorites.length > 0">
-        <p class="text-sm-left" style="margin:0px">
-          <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>
-          {{ favorites.map(item => item.nickname ).join("，")}} {{favorites.length}} 人收藏
-        </p>
-      </v-container>
-      <v-content fluid>
-        <v-container fluid style="padding:8px 8px 0px 8px;" v-if="!loading && comments.length > 0">
-          <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comments" :key="c.lid">
-            <div style="width:40px;height:40px;float:left">
-              <v-avatar size="40" color="grey lighten-4">
-                <img :src="c.avatar" alt="avatar">
+  <v-content style="background-color:#fff;margin: auto;height:100%" id="js-home">
+    <vue-pull-refresh :on-refresh="getContent">
+      <v-content style="width:600px;margin:60px 0px 0px 0px;">
+        <v-container fluid style="padding:8px 8px 0px 8px;">
+          <v-content page style="height:80px;margin: auto;">
+            <div style="width:80px;height:80px;float:left">
+              <v-avatar size="80" color="grey lighten-4">
+                <img :src="user.avatar" alt="avatar">
               </v-avatar>
             </div>
-            <div style="margin-left:50px;">
-              <p class="text-sm-left" style="margin:0px">
-                <span style="color:RGB(41,92,157);">{{c.nickname}}</span>
-                : {{c.comment}}
-              </p>
-              <p style="margin-bottom:5px" class="grey--text">
-                <timeago :since="c.date" :includeSeconds="true" :autoUpdate="1"></timeago>
-              </p>
+            <div style="margin-left:90px;height:80px;">
+              <v-content fluid>
+                <v-layout row wrap>
+                  <v-flex xs12 style="height:30px;">
+                    <p class="text-sm-left" style="font-size:20px;">{{user.nickname}}</p>
+                  </v-flex>
+                  <v-flex xs12 style="height:25px;">
+                    <p class="text-sm-left" style="font-size:15px;">
+                      第 {{user.uid}} 号会员，加入于
+                      <timeago :since="user.registered" :includeSeconds="true" :autoUpdate="1"></timeago>
+                    </p>
+                  </v-flex>
+                  <v-flex xs12 style="height:25px;">
+                    <p class="text-sm-left" style="font-size:15px;">共发表 {{user.jokeNum}} 条，被收藏评论 {{user.favoriteNum}} 次</p>
+                  </v-flex>
+                </v-layout>
+              </v-content>
             </div>
           </v-content>
         </v-container>
-        <v-content style="padding:12px 8px 8px 8px;">
-          <v-divider style="background-color:#949494"></v-divider>
-          <v-textarea color="teal" clearable hide-details maxlength="120">
-            <div slot="label">评论</div>
-          </v-textarea>
-          <v-layout row wrap style="margin-top:6px;">
-            <v-flex xs6>
-              <v-btn flat icon color="primary" style="margin-top:1px;margin-left:0px;">
-                <v-icon>sentiment_satisfied_alt</v-icon>
-              </v-btn>
+        <v-container fluid style="padding:8px 8px 0px 8px;">
+          <div class="text-xs-center" v-if="loading">
+            <v-progress-linear :indeterminate="true"></v-progress-linear>
+          </div>
+          <span class="joke" v-else v-html="joke.content"></span>
+        </v-container>
+        <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
+          <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index">
+        </v-container>
+        <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
+          <v-layout row wrap>
+            <v-flex xs7>
+              <p class="text-sm-left">
+                <span>{{ this.types[joke.type] }}</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;浏览 {{joke.see}} 次
+              </p>
             </v-flex>
-            <v-flex xs6>
-              <v-btn flat icon color="green" style="margin:5px 0px 0px 0px;float:right">
-                <v-icon>send</v-icon>
-              </v-btn>
+            <v-flex xs2></v-flex>
+            <v-flex xs3>
+              <v-layout align-right justify-space-around style="margin-top:-12px;">
+                <v-spacer></v-spacer>
+                <v-btn icon v-if="favorited" @click="like">
+                  <v-icon size="25" color="red">favorite</v-icon>
+                </v-btn>
+                <v-btn icon v-else @click="like">
+                  <v-icon size="25">favorite_border</v-icon>
+                </v-btn>
+                <!-- <v-icon size="25">chat</v-icon>
+                <v-icon size="25">fas fa-share</v-icon>-->
+              </v-layout>
             </v-flex>
           </v-layout>
+        </v-container>
+        <v-container fluid style="padding:3px 8px 0px 8px;" v-if="favorites.length > 0">
+          <p class="text-sm-left" style="margin:0px">
+            <v-icon small style="margin:0px 5px 0px 0px">favorite</v-icon>
+            {{ favorites.map(item => item.nickname ).join("，")}} {{favorites.length}} 人收藏
+          </p>
+        </v-container>
+        <v-content fluid>
+          <v-container fluid style="padding:8px 8px 0px 8px;" v-if="!loading && comments.length > 0">
+            <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comments" :key="c.lid">
+              <div style="width:40px;height:40px;float:left">
+                <v-avatar size="40" color="grey lighten-4">
+                  <img :src="c.avatar" alt="avatar">
+                </v-avatar>
+              </div>
+              <div style="margin-left:50px;">
+                <p class="text-sm-left" style="margin:0px">
+                  <span style="color:RGB(41,92,157);">{{c.nickname}}</span>
+                  : {{c.comment}}
+                </p>
+                <p style="margin-bottom:5px" class="grey--text">
+                  <timeago :since="c.date" :includeSeconds="true" :autoUpdate="1"></timeago>
+                </p>
+              </div>
+            </v-content>
+          </v-container>
+          <v-content style="padding:12px 8px 8px 8px;">
+            <v-divider style="background-color:#949494"></v-divider>
+            <v-textarea color="teal" clearable hide-details maxlength="120">
+              <div slot="label">评论</div>
+            </v-textarea>
+            <v-layout row wrap style="margin-top:6px;">
+              <v-flex xs6>
+                <v-btn flat icon color="primary" style="margin-top:1px;margin-left:0px;">
+                  <v-icon>sentiment_satisfied_alt</v-icon>
+                </v-btn>
+              </v-flex>
+              <v-flex xs6>
+                <v-btn flat icon color="green" style="margin:5px 0px 0px 0px;float:right">
+                  <v-icon>send</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-content>
         </v-content>
+        <div class="text-xs-center">
+          <v-btn fab dark large :loading="loading" color="green darken-2" @click="getContent">
+            <v-icon x-large dark>autorenew</v-icon>
+          </v-btn>
+        </div>
       </v-content>
-      <div class="text-xs-center">
-        <v-btn fab dark large :loading="loading" color="green darken-2" @click="getContent">
-          <v-icon x-large dark>autorenew</v-icon>
-        </v-btn>
-      </div>
-    </v-content>
+    </vue-pull-refresh>
   </v-content>
 </template>
 
@@ -119,6 +121,7 @@ import axios from "axios";
 import Identicon from "identicon.js";
 import md5 from "md5";
 import bus from "../eventBus.js";
+import VuePullRefresh from 'vue-pull-refresh';
 
 export default {
   data: () => ({
@@ -135,6 +138,9 @@ export default {
     users: [],
     comments: []
   }),
+  components: {
+    'vue-pull-refresh': VuePullRefresh
+  },
   methods: {
     async getContent() {
       this.content = "";
@@ -187,6 +193,9 @@ export default {
         this.$scrollTo("#js-home");
       });
       this.loading = false;
+      return new Promise(function (resolve, reject) {
+        resolve();
+      });
     },
     async like() {
       if (this.favorited) {
@@ -250,11 +259,11 @@ export default {
 
 .joke >>> p {
   margin-bottom: -10px;
-  font-size:20px;
+  font-size: 20px;
 }
 
 .joke {
   margin-bottom: -10px;
-  font-size:20px;
+  font-size: 20px;
 }
 </style>
