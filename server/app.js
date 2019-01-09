@@ -52,7 +52,7 @@ setInterval(async () => {
     let url = `http://www.360wa.com/m/user/${userId}/${page}`;
     if (spiderCount % 1000 === 0) {
       url = "http://www.360wa.com/m";
-    } else if (spiderCount % 10 === 0) {
+    } else if (spiderCount % 100 === 0) {
       url = "http://www.360wa.com/m/classics";
     }
     console.log(url);
