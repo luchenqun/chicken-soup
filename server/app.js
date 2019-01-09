@@ -132,10 +132,10 @@ setInterval(async () => {
         raw: true
       });
       if (jokeFind) {
-        console.log("√j ", pid);
+        console.log("u√j ", pid);
       } else {
         await Jokes.create(data);
-        console.log("↓j ", pid);
+        console.log("u↓j ", pid);
       }
 
       // 爬评论
@@ -164,10 +164,10 @@ setInterval(async () => {
             raw: true
           });
           if (link) {
-            console.log("√c ", pid);
+            console.log("u√c ", pid);
           } else {
             await Links.create(comment);
-            console.log("↓c ", pid);
+            console.log("u↓c ", pid);
           }
         }
       }
@@ -190,7 +190,7 @@ setInterval(async () => {
 
   spidering = false;
   spiderCount++;
-}, 9000);
+}, 5000);
 
 let index = 0;
 let spideringProduct = false;
@@ -268,10 +268,10 @@ setInterval(async () => {
       raw: true
     });
     if (joke) {
-      console.log("√j ", pid);
+      console.log("p√j ", pid);
     } else {
       await Jokes.create(data);
-      console.log("↓j ", pid);
+      console.log("p↓j ", pid);
     }
 
     // 插段子评论
@@ -281,10 +281,10 @@ setInterval(async () => {
         raw: true
       });
       if (link) {
-        console.log("√c ", pid);
+        console.log("p√c ", pid);
       } else {
         await Links.create(comment);
-        console.log("↓c ", pid);
+        console.log("p↓c ", pid);
       }
     }
   } catch (error) {
