@@ -34,20 +34,28 @@ try {
 }
 
 let items = config.items;
-
-// http://www.360wa.com/m/duanxiaohua/latest
-// http://www.360wa.com/duanxiaohua/product/336394
-// http://www.360wa.com/m/classics
-let spidering = false;
 let types = {};
 for (item of items) {
   types[item.pinyin] = item.type;
 }
+
+// http://www.360wa.com/m 首页爬(比较固定)
+// http://www.360wa.com/m/classics 精华(随机出)
+let spiderCount = 0;
+let userId = parseInt(config.userId) || 880000;
+let page = 1;
+let spidering = false;
 setInterval(async () => {
   if (spidering) return;
   spidering = true;
   try {
-    const url = `http://www.360wa.com/m/classics`;
+    let url = `http://www.360wa.com/m/user/${userId}/${page}`;
+    if (spiderCount % 1000 === 0) {
+      url = "http://www.360wa.com/m";
+    } else if (spiderCount % 10 === 0) {
+      url = "http://www.360wa.com/m/classics";
+    }
+    console.log(url);
     let body = await rp(url);
     let $ = cheerio.load(body, {
       decodeEntities: false
@@ -124,9 +132,10 @@ setInterval(async () => {
         raw: true
       });
       if (jokeFind) {
-        console.log("joke database already hava, pid = ", pid);
+        console.log("√j ", pid);
       } else {
         await Jokes.create(data);
+        console.log("↓j ", pid);
       }
 
       // 爬评论
@@ -155,11 +164,24 @@ setInterval(async () => {
             raw: true
           });
           if (link) {
-            console.log("commit database already hava : ", comment.comment);
+            console.log("√c ", pid);
           } else {
             await Links.create(comment);
+            console.log("↓c ", pid);
           }
         }
+      }
+    }
+
+    if (url.indexOf("user") > 0) {
+      if (jokes.length > 0) {
+        page++;
+      } else {
+        config.userId = userId;
+        fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config));
+
+        userId++;
+        page = 1;
       }
     }
   } catch (error) {
@@ -167,4 +189,111 @@ setInterval(async () => {
   }
 
   spidering = false;
+  spiderCount++;
 }, 9000);
+
+let index = 0;
+let spideringProduct = false;
+setInterval(async () => {
+  if (spideringProduct) return;
+  spideringProduct = true;
+  let item = items[index % items.length];
+  let pid = item.id;
+  let url = `http://www.360wa.com/${item.pinyin}/product/${item.id}`;
+  try {
+    let body = await rp(url);
+    let $ = cheerio.load(body, {
+      decodeEntities: false
+    });
+
+    let title = $(".title")
+      .text()
+      .trim(); // 标题
+
+    let $content = $(".article-content").eq(0);
+    let text = $content.text().trim(); // 正文
+
+    let imgs = []; // 正文里面包含的图片
+    $content.children("img").each(function(i, elem) {
+      let src = $(this).attr("src");
+      imgs.push(src);
+    });
+
+    let comments = []; // 评论
+    $(".comment").each(function(i, elem) {
+      if (i == 0) return;
+      let comment = $(this)
+        .children("p")
+        .text()
+        .trim();
+      comments.push({
+        joke_id: pid,
+        user_id: 1,
+        link_id: 1,
+        comment: comment,
+        type: 1
+      });
+    });
+
+    let nextHref = $(".forum2").attr("href");
+    item.id = nextHref.substring(nextHref.lastIndexOf("/") + 1); // 下一个爬取的id
+
+    let see = $(`#${pid}`)
+      .text()
+      .trim(); // 创建日期
+
+    if (title) {
+      title = "<h1>" + title + "</h1>";
+    }
+    if (text) {
+      text = "<p>" + text + "</p>";
+    }
+
+    let content = (title + text).replace(/\n/g, "<br/>");
+
+    let data = {
+      pid: pid,
+      user_id: 1,
+      content: content,
+      type: item.type,
+      imgs: JSON.stringify(imgs),
+      see: parseInt(see) + 1
+    };
+
+    // console.log(pid, JSON.stringify(content), item.type, JSON.stringify(imgs), see + 1, comments);
+
+    // 插段子
+    let joke = await Jokes.findOne({
+      where: { pid },
+      raw: true
+    });
+    if (joke) {
+      console.log("√j ", pid);
+    } else {
+      await Jokes.create(data);
+      console.log("↓j ", pid);
+    }
+
+    // 插段子评论
+    for (const comment of comments) {
+      let link = await Links.findOne({
+        where: comment,
+        raw: true
+      });
+      if (link) {
+        console.log("√c ", pid);
+      } else {
+        await Links.create(comment);
+        console.log("↓c ", pid);
+      }
+    }
+  } catch (error) {
+    console.log(url, "error", error);
+  }
+
+  spideringProduct = false;
+  index++;
+  if (index % 200 === 0) {
+    fs.writeFileSync(path.join(__dirname, "config.json"), JSON.stringify(config));
+  }
+}, 3000);

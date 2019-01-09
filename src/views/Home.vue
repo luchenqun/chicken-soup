@@ -32,7 +32,7 @@
         <div class="text-xs-center" v-if="loading">
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </div>
-        <span style="font-size:20px;" class="joke" v-else v-html="joke.content"></span>
+        <span class="joke" v-else v-html="joke.content"></span>
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
         <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index">
@@ -246,5 +246,15 @@ export default {
   margin-bottom: 2px;
   /* text-align:center; */
   line-height: 1.41;
+}
+
+.joke >>> p {
+  margin-bottom: -10px;
+  font-size:20px;
+}
+
+.joke {
+  margin-bottom: -10px;
+  font-size:20px;
 }
 </style>

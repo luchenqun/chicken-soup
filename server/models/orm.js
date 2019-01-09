@@ -14,6 +14,7 @@ const sequelize = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.passw
   host: dbConfig.host,
   port: dbConfig.port,
   dialect: "mysql",
+  logging: false,
   operatorsAliases: false,
   pool: {
     max: 5,
