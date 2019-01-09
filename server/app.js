@@ -103,8 +103,11 @@ setInterval(async () => {
       if (title) {
         title = "<h1>" + title + "</h1>";
       }
+      if (text) {
+        text = "<p>" + text + "</p>";
+      }
 
-      let content = (title + (title && text && "<br/>") + "<p>" + text + "</p>").replace(/\n/g, "<br/>");
+      let content = (title + text).replace(/\n/g, "<br/>");
 
       let data = {
         pid: pid,

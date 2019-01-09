@@ -32,7 +32,7 @@
         <div class="text-xs-center" v-if="loading">
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </div>
-        <span style="font-size:20px;" v-else v-html="joke.content"></span>
+        <span style="font-size:20px;" class="joke" v-else v-html="joke.content"></span>
       </v-container>
       <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
         <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index">
@@ -142,7 +142,7 @@ export default {
       this.favorited = false;
       await this.$sleep(Math.random() * 1000)
       let params = {
-        // id: 333260
+        // id: 276212
       }
       let resp = await axios.get("/api/joke/", { params });
       this.joke = resp.data.joke;
@@ -232,11 +232,19 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #js-menu {
   z-index: 200;
   position: fixed;
   bottom: 0;
   width: 100%;
+}
+
+.joke >>> h1 {
+  color: #494949;
+  font-size: 20px;
+  margin-bottom: 2px;
+  /* text-align:center; */
+  line-height: 1.41;
 }
 </style>
