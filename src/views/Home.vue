@@ -146,7 +146,7 @@ export default {
       this.content = "";
       this.loading = true;
       this.favorited = false;
-      await this.$sleep(Math.random() * 1000)
+      await this.$sleep(Math.random() * 300)
       let params = {
         // id: 276212
       }
