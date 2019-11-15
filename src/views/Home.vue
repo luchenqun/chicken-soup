@@ -123,7 +123,7 @@
           <v-chip label :color="item.select ? 'green' : 'default'" v-for="item of types" :key="item.type" @click="item.select = !item.select">{{ item.title }}</v-chip>
         </v-container>
         <v-divider></v-divider>
-        <span style="padding:10px 0px 0px 20px;">灰色不选，绿色选中。至少要选一个</span>
+        <span style="padding:10px 0px 0px 20px;">灰色不选，绿色选中。至少要选一个。你可以【浏览次数】左边的分类再次进入此对话框。</span>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="updateSelect">确认</v-btn>
@@ -281,6 +281,8 @@ export default {
     let selects = '1';
     if (localStorage) {
       selects = localStorage.getItem("types") || '1';
+      this.dialog = localStorage.getItem("first") !== 'y';
+      localStorage.setItem("first", 'y');
     }
     selects = selects.split(',');
 
