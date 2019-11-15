@@ -44,7 +44,7 @@ for (item of items) {
 let spiderCount = 0;
 let userId = parseInt(config.userId) || 880000;
 let page = 1;
-let spidering = false;
+let spidering = true;
 setInterval(async () => {
   if (spidering) return;
   spidering = true;
@@ -193,7 +193,7 @@ setInterval(async () => {
 }, 5000);
 
 let index = 0;
-let spideringProduct = false;
+let spideringProduct = true;
 setInterval(async () => {
   if (spideringProduct) return;
   spideringProduct = true;

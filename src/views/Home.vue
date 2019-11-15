@@ -6,7 +6,7 @@
           <v-content page style="height:80px;margin: auto;">
             <div style="width:80px;height:80px;float:left">
               <v-avatar size="80" color="grey lighten-4">
-                <img :src="user.avatar" alt="avatar">
+                <img :src="user.avatar" alt="avatar" />
               </v-avatar>
             </div>
             <div style="margin-left:90px;height:80px;">
@@ -36,13 +36,13 @@
           <span class="joke" v-else v-html="joke.content"></span>
         </v-container>
         <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
-          <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index">
+          <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index" />
         </v-container>
         <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
           <v-layout row wrap>
             <v-flex xs7>
               <p class="text-sm-left">
-                <span>{{ this.types[joke.type] }}</span>
+                <span @click="dialog = true">{{ type }}</span>
                 &nbsp;&nbsp;&nbsp;&nbsp;浏览 {{joke.see}} 次
               </p>
             </v-flex>
@@ -73,7 +73,7 @@
             <v-content page style="margin: 0px 0px 2px 0px;" v-for="c in comments" :key="c.lid">
               <div style="width:40px;height:40px;float:left">
                 <v-avatar size="40" color="grey lighten-4">
-                  <img :src="c.avatar" alt="avatar">
+                  <img :src="c.avatar" alt="avatar" />
                 </v-avatar>
               </div>
               <div style="margin-left:50px;">
@@ -113,6 +113,23 @@
         </div>
       </v-content>
     </vue-pull-refresh>
+    <v-dialog v-model="dialog" scrollable persistent max-width="90%;">
+      <v-card style="height:100%">
+        <v-card-title>
+          <span class="headline">选择你要查看的分类</span>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-container class="text-center">
+          <v-chip label :color="item.select ? 'green' : 'default'" v-for="item of types" :key="item.type" @click="item.select = !item.select">{{ item.title }}</v-chip>
+        </v-container>
+        <v-divider></v-divider>
+        <span style="padding:10px 0px 0px 20px;">灰色不选，绿色选中。至少要选一个</span>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="updateSelect">确认</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-content>
 </template>
 
@@ -131,9 +148,9 @@ export default {
     favorited: false,
     favorites: [],
     loading: false,
-    types: {
-      "1": "心灵毒汤"
-    },
+    likeType: [],
+    dialog: false,
+    types: [],
     user_id: "",
     users: [],
     comments: []
@@ -141,14 +158,33 @@ export default {
   components: {
     'vue-pull-refresh': VuePullRefresh
   },
+  computed: {
+    type: function () {
+      for (const item of this.types) {
+        if (item.type == this.joke.type) {
+          return item.title;
+        }
+      }
+      return "未分类";
+    }
+  },
   methods: {
     async getContent() {
       this.content = "";
       this.loading = true;
       this.favorited = false;
-      await this.$sleep(Math.random() * 300)
+      await this.$sleep(Math.random() * 300);
+      let selects = [];
+      for (const item of this.types) {
+        if (item.select) {
+          selects.push(item.type);
+        }
+      }
+      if (selects.length === 0) {
+        selects.push(1);
+      }
       let params = {
-        // id: 276212
+        type: selects.join('|')
       }
       let resp = await axios.get("/api/joke/", { params });
       this.joke = resp.data.joke;
@@ -223,13 +259,44 @@ export default {
         let resp = await axios.post("/api/add-favorite/", params);
       }
       this.favorited = !this.favorited;
+    },
+    async updateSelect() {
+      if (localStorage) {
+        let selects = [];
+        for (const item of this.types) {
+          if (item.select) {
+            selects.push(item.type);
+          }
+        }
+        if (selects.length === 0) {
+          selects.push(1);
+        }
+        localStorage.setItem("types", selects);
+      }
+      this.dialog = false;
     }
   },
-  created: async function () {
+  beforeCreate: async function () {
     let resp = await axios.get("/api/types/", {});
-    for (let item of resp.data) {
-      this.types[item.type] = item.title;
+    let selects = '1';
+    if (localStorage) {
+      selects = localStorage.getItem("types") || '1';
     }
+    selects = selects.split(',');
+
+    this.types.push({
+      type: 1,
+      title: "心灵毒汤",
+      select: true
+    })
+    for (let item of resp.data) {
+      this.types.push({
+        type: item.type,
+        title: item.title,
+        select: selects.indexOf(String(item.type)) >= 0
+      })
+    }
+
     this.user_id = localStorage.getItem('user_id') || (-1);
     await this.getContent();
   },

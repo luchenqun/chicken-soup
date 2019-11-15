@@ -24,6 +24,13 @@ var api = function() {
         limit: 1,
         raw: true
       };
+      if (ctx.query.type) {
+        options.where = {
+          type: {
+            [Op.or]: ctx.query.type.split("|")
+          }
+        };
+      }
       if (ctx.query.id) {
         options.where = {
           pid: ctx.query.id
