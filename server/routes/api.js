@@ -40,6 +40,7 @@ var api = function() {
       }
       let joke = (await Jokes.findAll(options))[0];
       joke.imgs && (joke.imgs = JSON.parse(joke.imgs));
+      joke.imgs = joke.imgs || [];
 
       let links = await Links.findAll({
         where: {
