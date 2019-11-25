@@ -188,6 +188,9 @@ export default {
       }
       let resp = await axios.get("/api/joke/", { params });
       this.joke = resp.data.joke;
+      for (let index = 0; index < this.joke.imgs.length; index++) {
+        this.joke.imgs[index] = `http://img01.store.sogou.com/net/a/04/link?appid=100520029&url=${this.joke.imgs[index]}`;
+      }
       this.user = {};
       for (let user of this.users) {
         if (user.uid === this.joke.user_id) {
