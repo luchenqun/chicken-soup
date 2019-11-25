@@ -36,7 +36,7 @@
           <span class="joke" v-else v-html="joke.content"></span>
         </v-container>
         <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
-          <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index" />
+          <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index" @load="loadImage" />
         </v-container>
         <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
           <v-layout row wrap>
@@ -148,6 +148,7 @@ export default {
     favorited: false,
     favorites: [],
     loading: false,
+    loadImageCount: 0,
     likeType: [],
     dialog: false,
     types: [],
@@ -173,7 +174,8 @@ export default {
       this.content = "";
       this.loading = true;
       this.favorited = false;
-      await this.$sleep(Math.random() * 300);
+      this.loadImageCount = 0;
+      await this.$sleep(Math.random() * 200);
       let selects = [];
       for (const item of this.types) {
         if (item.select) {
@@ -188,6 +190,7 @@ export default {
       }
       let resp = await axios.get("/api/joke/", { params });
       this.joke = resp.data.joke;
+      this.joke.imgs = this.joke.imgs || [];
       for (let index = 0; index < this.joke.imgs.length; index++) {
         this.joke.imgs[index] = `https://images.weserv.nl/?url=${this.joke.imgs[index]}`;
       }
@@ -231,10 +234,20 @@ export default {
       this.$nextTick().then(() => {
         this.$scrollTo("#js-home");
       });
-      this.loading = false;
+
+      this.loading = (this.joke.imgs.length !== 0);
+      setTimeout(() => {
+        this.loading = false;
+      }, 6000)
       return new Promise(function (resolve, reject) {
         resolve();
       });
+    },
+    loadImage() {
+      this.loadImageCount++;
+      if (this.loadImageCount === this.joke.imgs.length) {
+        this.loading = false;
+      }
     },
     async like() {
       if (this.favorited) {
