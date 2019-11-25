@@ -35,7 +35,7 @@
           </div>
           <span class="joke" v-else v-html="joke.content"></span>
         </v-container>
-        <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="!loading && joke.imgs">
+        <v-container fluid style="padding:8px 8px 0px 8px;text-align: center;" v-if="joke.imgs">
           <img :src="img" style="max-width: 100%;height: auto;" v-for="(img, index) in joke.imgs" :key="index" @load="loadImage" />
         </v-container>
         <v-container fluid style="padding:8px 8px 0px 8px;height:25px" v-if="!loading">
@@ -175,6 +175,7 @@ export default {
       this.loading = true;
       this.favorited = false;
       this.loadImageCount = 0;
+      this.joke = {};
       await this.$sleep(Math.random() * 200);
       let selects = [];
       for (const item of this.types) {
